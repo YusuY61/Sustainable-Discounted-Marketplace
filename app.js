@@ -1,7 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import session from "express-session";
+import bcrypt from "bcrypt";
 import db from "./db.js";
-import "dotenv/config";
 
 const app = express();
 
@@ -44,18 +45,60 @@ app.post("/register-market", (req, res) => {
 app.get("/register-consumer", (req, res) => {
     res.render("register-consumer", { error: null, old: {} });
 });
-app.post("/register-consumer", (req, res) => {
+// app.post("/register-consumer", (req, res) => {
+//     const { email, fullName, password, city, district } = req.body;
+//     if (!email || !fullName || !password || !city || !district) {
+//         return res.render("register-consumer", {
+//             error: "Please fill all fields.",
+//             old: req.body
+//         });
+//     }
+//     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+//     console.log("Consumer verification code:", verificationCode);
+//     res.render("verify", {
+//         email: email,
+//         code: verificationCode,
+//         message: "Registration completed. Please enter the verification code.",
+//         error: null
+//     });
+// });
+
+app.post("/register-consumer", async (req, res) => {
     const { email, fullName, password, city, district } = req.body;
+
+    // Validation
     if (!email || !fullName || !password || !city || !district) {
         return res.render("register-consumer", {
             error: "Please fill all fields.",
             old: req.body
         });
     }
+
+    // Email daha önce alınmış mı?
+    const [existing] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+    if (existing.length > 0) {
+        return res.render("register-consumer", {
+            error: "This email is already registered.",
+            old: req.body
+        });
+    }
+
+    // Şifreyi hashle
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Verification code üret
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // DB'ye kaydet (is_verified = false)
+    await db.query(
+        "INSERT INTO users (email, password, full_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'consumer', ?, false)",
+        [email, hashedPassword, fullName, city, district, verificationCode]
+    );
+
     console.log("Consumer verification code:", verificationCode);
+
     res.render("verify", {
-        email: email,
+        email,
         code: verificationCode,
         message: "Registration completed. Please enter the verification code.",
         error: null
