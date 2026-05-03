@@ -92,11 +92,11 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/market/dashboard", (req, res) => {
-    res.render("market-dashboard");
+    res.render("dashboard-market");
 });
 
 app.get("/consumer/dashboard", (req, res) => {
-    res.render("consumer-dashboard");
+    res.render("dashboard-consumer");
 });
 
 app.listen(process.env.PORT, () => {
