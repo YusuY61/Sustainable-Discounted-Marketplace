@@ -144,3 +144,5 @@ vite.config.ts.timestamp-*
 
 #docker
 docker-compose.yml
+
+db.js
