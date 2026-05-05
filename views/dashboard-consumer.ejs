@@ -47,7 +47,7 @@
               <%= product.discounted_price %> TL
             </p>
             <p><b>Expiration Date:</b>
-              <%= product.expiration_date %>
+              <%= product.expiration_date.toLocaleDateString("tr-TR") %>
             </p>
             <p><b>Days Left:</b>
               <%= product.days_left %>
@@ -74,4 +74,4 @@
 
 </body>
 
-</html>git add views/dashboard-consumer.ejs
+</html>
