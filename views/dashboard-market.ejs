@@ -18,6 +18,13 @@
       color: #b91c1c;
       font-weight: bold;
     }
+
+    .small-info {
+      font-size: 12px;
+      color: #555;
+      text-align: left;
+      margin-top: 8px;
+    }
   </style>
 </head>
 
@@ -29,12 +36,14 @@
     <h1>Market Dashboard</h1>
 
     <form action="/market/dashboard" method="post" enctype="multipart/form-data">
+      <h2>Add Product</h2>
       <input name="name" type="text" placeholder="Name" />
       <input name="stock" type="text" placeholder="Stock" />
       <input name="normalPrice" type="text" placeholder="Normal Price" />
       <input name="discountedPrice" type="text" placeholder="Discounted Price" />
       <input name="expirationDate" type="date" placeholder="Expiration Date" />
       <input name="image" type="file" accept="image/*" />
+      <p class="small-info">Products with past expiration dates will be marked as expired.</p>
       <button type="submit">ADD</button>
     </form>
 
@@ -48,6 +57,7 @@
           <td>Normal Price</td>
           <td>Discounted Price</td>
           <td>Expiration Date</td>
+          <td>Status</td>
           <td>Edit</td>
           <td>Delete</td>
         </tr>
@@ -74,8 +84,12 @@
                 </td>
                 <td>
                   <%= p.expiration_date.toLocaleDateString("tr-TR") %>
-                    <% if (expired) { %>
-                      <span class="expired-text">(EXPIRED)</span>
+                </td>
+                <td>
+                  <% if (expired) { %>
+                    <span class="expired-text">EXPIRED</span>
+                    <% } else { %>
+                      Active
                       <% } %>
                 </td>
                 <td>
