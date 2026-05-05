@@ -140,11 +140,24 @@ app.post("/login", async (req, res) => {
   }
 
   const [rows] = await db.query(
-    `SELECT id, email, role FROM users WHERE email = ?`,
+    "SELECT id, email, password, role FROM users WHERE email = ?",
     [email],
   );
 
+  if (rows.length === 0) {
+    return res.render("index", {
+      error: "Email or password is wrong.",
+    });
+  }
+
   const user = rows[0];
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordCorrect) {
+    return res.render("index", {
+      error: "Email or password is wrong.",
+    });
+  }
 
   req.session.user = {
     id: user.id,
@@ -152,16 +165,33 @@ app.post("/login", async (req, res) => {
     role: user.role,
   };
 
-  res.redirect("/market/dashboard");
+  if (user.role === "market") {
+    return res.redirect("/market/dashboard");
+  }
+
+  res.redirect("/consumer/dashboard");
 });
 
-app.get("/market/dashboard", async (req, res) => {
-  const [arr] = await db.query(`SELECT * FROM products`)
+function checkMarket(req, res, next) {
+  if (!req.session.user || req.session.user.role !== "market") {
+    return res.redirect("/");
+  }
+  next();
+}
 
+function checkConsumer(req, res, next) {
+  if (!req.session.user || req.session.user.role !== "consumer") {
+    return res.redirect("/");
+  }
+  next();
+}
+
+app.get("/market/dashboard", checkMarket, async (req, res) => {
+  const [arr] = await db.query(`SELECT * FROM products`);
   res.render("dashboard-market", {arr});
 });
 
-app.post("/market/dashboard", async (req, res) => {
+app.post("/market/dashboard", checkMarket, async (req, res) => {
   console.log(req.body);
   console.log(req.session);
   try {
@@ -176,7 +206,7 @@ app.post("/market/dashboard", async (req, res) => {
         req.body.expirationDate,
       ],
     );
-    res.redirect('/market/dashboard');
+    res.redirect("/market/dashboard");
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Add error");
@@ -184,7 +214,7 @@ app.post("/market/dashboard", async (req, res) => {
   
 });
 
-app.get("/consumer/dashboard", (req, res) => {
+app.get("/consumer/dashboard", checkConsumer, (req, res) => {
   res.render("dashboard-consumer");
 });
 
