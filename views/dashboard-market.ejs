@@ -1,58 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Market Dashboard</title>
-    <link rel="stylesheet" href="/style.css" />
-    <style>
-      form {
-        max-width: 200px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Market Dashboard</h1>
 
-      <form action="/market/dashboard" method="post">
-        <input name="name" type="text" placeholder="Name" />
-        <input name="stock" type="text" placeholder="Stock" />
-        <input name="normalPrice" type="text" placeholder="Normal Price" />
-        <input
-          name="discountedPrice"
-          type="text"
-          placeholder="Discounted Price"
-        />
-        <input
-          name="expirationDate"
-          type="date"
-          placeholder="Expiration Date"
-        />
-        <button type="submit">ADD</button>
-      </form>
+<head>
+  <meta charset="UTF-8" />
+  <title>Market Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    form {
+      max-width: 200px;
+    }
 
-      <div class="card">
-        <!-- <p>Market user will manage products here.</p> -->
-        <table>
-          <tr>
-            <td>Title</td>
-            <td>Stock</td>
-            <td>Normal Price</td>
-            <td>Discounted Price</td>
-            <td>Expiration Date</td>
-          </tr>
-          <% arr.forEach( p => { %>
-            <tr>
-              <td><%= p.title %></td>
-              <td><%= p.stock %></td>
-              <td><%= p.normal_price %> TL</td>
-              <td><%= p.discounted_price %> TL</td>
-              <td><%= p.expiration_date.toLocaleDateString("tr-TR") %></td>
-            </tr>
-          <% }) %>
-        </table>
-        <a href="/">Logout</a>
-      </div>
+    tr.expired {
+      background: #fee2e2;
+    }
+
+    .expired-text {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <button><a href="/profile">👤</a></button>
+  </div>
+  <div class="container">
+    <h1>Market Dashboard</h1>
+
+    <form action="/market/dashboard" method="post" enctype="multipart/form-data">
+      <input name="name" type="text" placeholder="Name" />
+      <input name="stock" type="text" placeholder="Stock" />
+      <input name="normalPrice" type="text" placeholder="Normal Price" />
+      <input name="discountedPrice" type="text" placeholder="Discounted Price" />
+      <input name="expirationDate" type="date" placeholder="Expiration Date" />
+      <input name="image" type="file" accept="image/*" />
+      <button type="submit">ADD</button>
+    </form>
+
+    <div class="card">
+      <!-- <p>Market user will manage products here.</p> -->
+      <table>
+        <tr>
+          <td>Image</td>
+          <td>Title</td>
+          <td>Stock</td>
+          <td>Normal Price</td>
+          <td>Discounted Price</td>
+          <td>Expiration Date</td>
+          <td>Edit</td>
+          <td>Delete</td>
+        </tr>
+        <% const today=new Date(); today.setHours(0, 0, 0, 0); %>
+          <% arr.forEach( p=> {
+            const expired = p.expiration_date < today; %>
+              <tr class="<%= expired ? 'expired' : '' %>">
+                <td>
+                  <% if (p.image_path) { %>
+                    <img src="/uploads/<%= p.image_path %>" width="60" />
+                    <% } %>
+                </td>
+                <td>
+                  <%= p.title %>
+                </td>
+                <td>
+                  <%= p.stock %>
+                </td>
+                <td>
+                  <%= p.normal_price %> TL
+                </td>
+                <td>
+                  <%= p.discounted_price %> TL
+                </td>
+                <td>
+                  <%= p.expiration_date.toLocaleDateString("tr-TR") %>
+                    <% if (expired) { %>
+                      <span class="expired-text">(EXPIRED)</span>
+                      <% } %>
+                </td>
+                <td>
+                  <a href="/market/edit-product/<%= p.id %>">Edit</a>
+                </td>
+                <td>
+                  <form action="/market/delete-product/<%= p.id %>" method="post">
+                    <button type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+      </table>
+      <a href="/">Logout</a>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <form action="/profile-update" method="POST" class="card">
+      <h2>My Profile</h2>
+
+      <% if (error) { %>
+        <p class="error">
+          <%= error %>
+        </p>
+        <% } %>
+
+          <% if (success) { %>
+            <p class="success">
+              <%= success %>
+            </p>
+            <% } %>
+
+              <div>
+                <label>Role</label>
+                <input type="text" value="<%= user.role %>" disabled>
+              </div>
+
+              <div>
+                <label>Email</label>
+                <input type="email" name="email" value="<%= user.email || '' %>" required>
+              </div>
+
+              <div>
+                <label>
+                  <%= user.role==='market' ? 'Market Name' : 'Full Name' %>
+                </label>
+                <input type="text" name="name"
+                  value="<%= (user.role === 'market' ? user.market_name : user.full_name) || '' %>" required>
+              </div>
+
+              <div>
+                <label>City</label>
+                <input type="text" name="city" value="<%= user.city || '' %>" required>
+              </div>
+
+              <div>
+                <label>District</label>
+                <input type="text" name="district" value="<%= user.district || '' %>" required>
+              </div>
+
+              <hr>
+              <p><small>Leave password fields empty if you don't want to change it.</small></p>
+
+              <div>
+                <label>Current Password</label>
+                <input type="password" name="currentPassword">
+              </div>
+
+              <div>
+                <label>New Password</label>
+                <input type="password" name="newPassword">
+              </div>
+
+              <button type="submit">Update Profile</button>
+
+              <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>">Back to
+                dashboard</a>
+    </form>
+  </div>
+
+</body>
+
+</html>

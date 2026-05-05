@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Product</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>Edit Product</h1>
+
+    <%
+      const d = product.expiration_date;
+      const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    %>
+
+    <form action="/market/edit-product/<%= product.id %>" method="post" class="card" enctype="multipart/form-data">
+      <div>
+        <label>Name</label>
+        <input name="name" type="text" value="<%= product.title %>" required />
+      </div>
+      <div>
+        <label>Stock</label>
+        <input name="stock" type="text" value="<%= product.stock %>" required />
+      </div>
+      <div>
+        <label>Normal Price</label>
+        <input name="normalPrice" type="text" value="<%= product.normal_price %>" required />
+      </div>
+      <div>
+        <label>Discounted Price</label>
+        <input name="discountedPrice" type="text" value="<%= product.discounted_price %>" required />
+      </div>
+      <div>
+        <label>Expiration Date</label>
+        <input name="expirationDate" type="date" value="<%= dateStr %>" required />
+      </div>
+      <div>
+        <label>Image</label>
+        <% if (product.image_path) { %>
+          <div><img src="/uploads/<%= product.image_path %>" width="120" /></div>
+        <% } %>
+        <input name="image" type="file" accept="image/*" />
+        <small>Leave empty to keep current image.</small>
+      </div>
+      <button type="submit">Update</button>
+    </form>
+
+    <a href="/market/dashboard">Back</a>
+  </div>
+</body>
+
+</html>
