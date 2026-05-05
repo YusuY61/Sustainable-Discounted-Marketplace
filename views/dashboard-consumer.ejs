@@ -1,20 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Consumer Dashboard</title>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
 
   <div class="container">
     <h1>Consumer Dashboard</h1>
 
     <div class="card">
-      <p>Consumer user will search products here.</p>
+      <form action="/consumer/dashboard" method="GET">
+        <h2>Search Products</h2>
+
+        <label>Product Name</label>
+        <input type="text" name="search" value="<%= search || '' %>" placeholder="Search product name">
+
+        <button type="submit">Search</button>
+      </form>
+
       <a href="/">Logout</a>
     </div>
+
+    <% if (products && products.length> 0) { %>
+      <div class="products">
+        <% products.forEach(product=> { %>
+          <div class="product-card">
+            <h3>
+              <%= product.title %>
+            </h3>
+
+            <p><b>Market:</b>
+              <%= product.market_name %>
+            </p>
+            <p><b>District:</b>
+              <%= product.district %>
+            </p>
+            <p><b>Normal Price:</b>
+              <%= product.normal_price %> TL
+            </p>
+            <p><b>Discounted Price:</b>
+              <%= product.discounted_price %> TL
+            </p>
+            <p><b>Expiration Date:</b>
+              <%= product.expiration_date %>
+            </p>
+            <p><b>Days Left:</b>
+              <%= product.days_left %>
+            </p>
+            <p><b>Stock:</b>
+              <%= product.stock %>
+            </p>
+
+            <button type="button">Add to Cart</button>
+          </div>
+          <% }) %>
+      </div>
+      <% } else if (search) { %>
+        <p class="error">No product found.</p>
+        <% } %>
+
+          <div class="links">
+            <% if (page> 1) { %>
+              <a href="/consumer/dashboard?search=<%= search %>&page=<%= page - 1 %>">Previous</a>
+              <% } %>
+
+                <% if (products && products.length===4) { %>
+                  <a href="/consumer/dashboard?search=<%= search %>&page=<%= page + 1 %>">Next</a>
+                  <% } %>
+          </div>
   </div>
 
 </body>
+
 </html>
