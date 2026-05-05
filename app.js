@@ -26,20 +26,42 @@ app.get("/", async (req, res) => {
 app.get("/register-market", (req, res) => {
   res.render("register-market", { error: null, old: {} });
 });
-app.post("/register-market", (req, res) => {
+app.post("/register-market", async (req, res) => {
   const { email, marketName, password, city, district } = req.body;
+
   if (!email || !marketName || !password || !city || !district) {
     return res.render("register-market", {
       error: "Please fill all fields.",
       old: req.body,
     });
   }
+
+  const [existing] = await db.query("SELECT id FROM users WHERE email = ?", [
+    email,
+  ]);
+
+  if (existing.length > 0) {
+    return res.render("register-market", {
+      error: "This email is already registered.",
+      old: req.body,
+    });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const verificationCode = Math.floor(
     100000 + Math.random() * 900000,
   ).toString();
+
+  await db.query(
+    "INSERT INTO users (email, password, market_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'market', ?, false)",
+    [email, hashedPassword, marketName, city, district, verificationCode],
+  );
+
   console.log("Market verification code:", verificationCode);
+
   res.render("verify", {
-    email: email,
+    email,
     code: verificationCode,
     message: "Registration completed. Please enter the verification code.",
     error: null,
@@ -132,28 +154,24 @@ app.get("/verify", (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.render("index", {
       error: "Please enter email and password.",
     });
   }
-
   const [rows] = await db.query(
     "SELECT id, email, password, role FROM users WHERE email = ?",
     [email],
   );
-
   if (rows.length === 0) {
     return res.render("index", {
       error: "Email or password is wrong.",
     });
   }
-
   const user = rows[0];
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  const checkPassword = await bcrypt.compare(password, user.password);
 
-  if (!isPasswordCorrect) {
+  if (!checkPassword) {
     return res.render("index", {
       error: "Email or password is wrong.",
     });
