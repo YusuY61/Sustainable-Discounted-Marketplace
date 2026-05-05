@@ -3,8 +3,38 @@ import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import db from "./db.js";
+import nodemailer from "nodemailer";
 
 const app = express();
+
+//burayı kontrol etmemiz lazım
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function sendVerificationMail(email, code) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log("Email info is missing. Verification code:", code);
+    return;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Discount Marketplace Verification Code",
+      text: `Your verification code is: ${code}`,
+    });
+  } catch (error) {
+    console.log("Mail could not be sent:", error.message);
+    console.log("Verification code:", code);
+  }
+}
+// buraya kadar
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -59,11 +89,12 @@ app.post("/register-market", async (req, res) => {
   );
 
   console.log("Market verification code:", verificationCode);
+  await sendVerificationMail(email, verificationCode);
 
   res.render("verify", {
     email,
-    code: verificationCode,
-    message: "Registration completed. Please enter the verification code.",
+    code: "",
+    message: "Registration completed. Verification code was sent to your email.",
     error: null,
   });
 });
@@ -126,11 +157,12 @@ app.post("/register-consumer", async (req, res) => {
   );
 
   console.log("Consumer verification code:", verificationCode);
+  await sendVerificationMail(email, verificationCode);
 
   res.render("verify", {
     email,
-    code: verificationCode,
-    message: "Registration completed. Please enter the verification code.",
+    code: "",
+    message: "Registration completed. Verification code was sent to your email.",
     error: null,
   });
 });
@@ -206,7 +238,7 @@ function checkConsumer(req, res, next) {
 
 app.get("/market/dashboard", checkMarket, async (req, res) => {
   const [arr] = await db.query(`SELECT * FROM products`);
-  res.render("dashboard-market", {arr});
+  res.render("dashboard-market", { arr });
 });
 
 app.post("/market/dashboard", checkMarket, async (req, res) => {
@@ -229,11 +261,43 @@ app.post("/market/dashboard", checkMarket, async (req, res) => {
     console.error(error.message);
     res.status(500).send("Add error");
   }
-  
+
 });
 
-app.get("/consumer/dashboard", checkConsumer, (req, res) => {
-  res.render("dashboard-consumer");
+// incele
+app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
+  const search = req.query.search || "";
+  let products = [];
+
+  if (search !== "") {
+    const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [
+      req.session.user.id,
+    ]);
+
+    const city = consumer[0].city;
+    const district = consumer[0].district;
+
+    const [arr] = await db.query(
+      `SELECT products.*, users.market_name, users.district,
+       DATEDIFF(products.expiration_date, CURDATE()) AS days_left
+       FROM products, users
+       WHERE products.market_id = users.id
+       AND products.title LIKE ?
+       AND users.city = ?
+       AND products.expiration_date >= CURDATE()
+       ORDER BY users.district = ? DESC
+       LIMIT 4`,
+      [`%${search}%`, city, district],
+    );
+
+    products = arr;
+  }
+
+  res.render("dashboard-consumer", {
+    search: search,
+    products: products,
+    page: 1,
+  });
 });
 
 app.listen(process.env.PORT, () => {
