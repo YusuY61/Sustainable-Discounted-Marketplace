@@ -22,6 +22,7 @@
         <button type="submit">Search</button>
       </form>
 
+      <a href="/cart">Cart</a>
       <a href="/">Logout</a>
     </div>
 
@@ -55,25 +56,22 @@
               <%= product.stock %>
             </p>
 
-            <button type="button">Add to Cart</button>
+            <form action="/cart/add" method="POST">
+              <input type="hidden" name="productId" value="<%= product.id %>">
+              <button type="submit">Add to Cart</button>
+            </form>
           </div>
           <% }) %>
       </div>
       <% } else if (search) { %>
         <p class="error">No product found.</p>
         <% } %>
+          <% if (!search) { %>
+            <p>Search a product to see discounted items.</p>
+            <% } %>
 
-          <div class="links">
-            <% if (page> 1) { %>
-              <a href="/consumer/dashboard?search=<%= search %>&page=<%= page - 1 %>">Previous</a>
-              <% } %>
-
-                <% if (products && products.length===4) { %>
-                  <a href="/consumer/dashboard?search=<%= search %>&page=<%= page + 1 %>">Next</a>
-                  <% } %>
-          </div>
   </div>
 
 </body>
 
-</html>
+</html>git add views/dashboard-consumer.ejs
