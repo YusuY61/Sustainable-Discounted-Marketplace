@@ -6,6 +6,7 @@ import db from "./db.js";
 import nodemailer from "nodemailer";
 import multer from "multer";
 import fs from "fs";
+import { error } from "console";
 
 const app = express();
 
@@ -373,19 +374,49 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     `SELECT * FROM products WHERE market_id = ?`,
     [req.session.user.id],
   );
-  res.render("dashboard-market", { arr });
+  res.render("dashboard-market", { arr, errors: [] });
 });
 
 app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, res) => {
   console.log(req.body);
   console.log(req.session);
   const imagePath = req.file ? req.file.filename : null;
+  let { name, stock, normalPrice, discountedPrice, expirationDate} = req.body;
+  const errors = [];
+  name = name.trim();
+  stock = parseInt(stock)
+  normalPrice = parseInt(normalPrice)
+  discountedPrice = parseInt(discountedPrice)
+
+  if (!name) {
+    errors.push("Product must have a title.")
+  }
+  if (!stock || stock <= 0) {
+    errors.push("Stock must be a positive integer.")
+  }
+  if (!normalPrice || normalPrice <= 0) {
+    errors.push("Normal price must be a positive integer.")
+  }
+  if (!discountedPrice || discountedPrice <= 0) {
+    errors.push("Normal price must be a positive integer.")
+  }
+  if (normalPrice <= discountedPrice) {
+    errors.push("Discounted price must be less than normal price.")
+  }
+  if (!expirationDate) {
+    errors.push("Product must have an expiration date.")
+  }
+
+  if (errors.length > 0) {
+    const [arr] = await db.query(`SELECT * FROM products WHERE market_id = ?`, [req.session.user.id])
+    return res.render("dashboard-market", {arr, errors})
+  }
   try {
     await db.query(
       `INSERT into products (market_id, title, stock, normal_price, discounted_price, expiration_date, image_path) values (?, ?, ?, ?, ?, ?, ?) `,
       [
         req.session.user.id,
-        req.body.name,
+        req.body.name.trim(),
         req.body.stock,
         req.body.normalPrice,
         req.body.discountedPrice,
@@ -397,6 +428,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Add error");
+    // res.redirect("/market/dashboard");
   }
 
 });

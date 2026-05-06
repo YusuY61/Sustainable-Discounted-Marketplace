@@ -6,6 +6,24 @@
   <title>Market Dashboard</title>
   <link rel="stylesheet" href="/style.css" />
   <style>
+    body{
+      max-width: 100%;
+      /* background-color: #b91c1c; */
+    }
+    .container{
+      display: flex;
+      flex-direction: row;
+      /* background-color: aqua; */
+      max-width: fit-content;
+    }
+
+    .card{
+      max-width: 1000px;
+      margin-left: 50px;
+      display: flex;
+      flex-direction: column;
+    }
+
     form {
       max-width: 200px;
     }
@@ -14,9 +32,38 @@
       background: #fee2e2;
     }
 
+    td{
+      padding: 10 12px;
+      /* font-size: 18px; */
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    td:nth-child(2) {
+      width: 180px;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      text-overflow: clip;
+      padding: 0 10px;
+    }
+
+    td img{
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      display: block;
+    }
+
+    tr:first-child td{
+      padding: 0px 10px;
+    }
+
     .expired-text {
       color: #b91c1c;
       font-weight: bold;
+
     }
 
     .small-info {
@@ -25,15 +72,34 @@
       text-align: left;
       margin-top: 8px;
     }
+
+    #btns{
+      margin-top: auto;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+    }
+    .delBtn{
+      background: transparent;
+      color: #b91c1c;
+      margin-bottom: 16px;
+    }
+    .delBtn:hover{
+      background-color: red;
+      color: #ddd;
+    }
+    #errors{
+      color: red;
+    }
   </style>
 </head>
 
 <body>
-  <div>
-    <button><a href="/profile">👤</a></button>
-  </div>
+
+  <h1>Market Dashboard</h1>
   <div class="container">
-    <h1>Market Dashboard</h1>
+    
 
     <form action="/market/dashboard" method="post" enctype="multipart/form-data">
       <h2>Add Product</h2>
@@ -97,14 +163,27 @@
                 </td>
                 <td>
                   <form action="/market/delete-product/<%= p.id %>" method="post">
-                    <button type="submit">Delete</button>
+                    <button class="delBtn" type="submit">Delete</button>
                   </form>
                 </td>
               </tr>
               <% }) %>
       </table>
-      <a href="/">Logout</a>
+      <div id="btns">
+        <a href="/">Logout ➜]</a>
+        <a href="/profile">Edit Profile👤</a>
+      </div>
+      
     </div>
+  </div>
+  <div id="errors">
+    <% if(errors){ %>
+      <h1 style="color: red;">Product couldn't be added:</h1>
+    <% errors.forEach((e) => { %>
+      <p><%=e%></p>
+    <% }) %>
+    <%}%>
+
   </div>
 </body>
 
