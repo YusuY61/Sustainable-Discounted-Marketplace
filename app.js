@@ -392,7 +392,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
   console.log(req.body);
   console.log(req.session);
   const imagePath = req.file ? req.file.filename : null;
-  let { name, stock, normalPrice, discountedPrice, expirationDate} = req.body;
+  let { name, stock, normalPrice, discountedPrice, expirationDate } = req.body;
   const errors = [];
   name = name.trim();
   stock = parseInt(stock)
@@ -420,7 +420,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
 
   if (errors.length > 0) {
     const [arr] = await db.query(`SELECT * FROM products WHERE market_id = ?`, [req.session.user.id])
-    return res.render("dashboard-market", {arr, errors})
+    return res.render("dashboard-market", { arr, errors })
   }
   try {
     await db.query(
@@ -523,7 +523,11 @@ app.post("/market/delete-expired", checkMarket, async (req, res) => {
 app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
   const search = req.query.search || "";
   let products = [];
-
+  //isim için ekledim
+  const [table] = await db.query("SELECT * FROM users WHERE id = ?", [
+    req.session.user.id,
+  ]);
+  const userName = table[0].full_name;
   if (search !== "") {
     const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [
       req.session.user.id,
@@ -552,6 +556,7 @@ app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
     search: search,
     products: products,
     page: 1,
+    userName: userName,
   });
 });
 
