@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Dashboard</title>
+  <link rel="stylesheet" href="/styles/market/market-dashboard.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="link-btn">Logout</a>
+      <a href="/profile" class="link-btn">Profil</a>
+    </div>
+    <div class="register">
+      <div class="errors">
+
+      </div>
+
+      <form action="/market/dashboard" method="post" enctype="multipart/form-data" id="register-form">
+        <div class="property">
+          <label for="product-name">Product Name:</label>
+          <input type="text" name="name" id="product-name" placeholder="Product Name" required>
+        </div>
+
+        <div class="property">
+          <label for="product-stock">Stock:</label>
+          <input type="number" name="stock" id="product-stock" placeholder="Stock" required>
+        </div>
+
+        <div class="property">
+          <label for="product-price">Price:</label>
+          <input type="number" name="normalPrice" id="product-price" placeholder="Price" required>
+        </div>
+
+        <div class="property">
+          <label for="product-discounted-price">Discounted Price: </label>
+          <input type="number" name="discountedPrice" id="product-discounted-price" placeholder="Discounted Price"
+            required>
+        </div>
+
+        <div class="property">
+          <label for="product-expiration-date">Expiration Date:</label>
+          <input type="date" name="expirationDate" id="product-expiration-date" required>
+        </div>
+
+        <div class="property">
+          <label for="product-image">Image: </label>
+          <input type="file" name="image" id="product-image" required>
+        </div>
+
+
+        <button type="submit">Add Product</button>
+      </form>
+    </div>
+    <div class="products">
+      <% arr.forEach(p=> { %>
+        <div class="product <%- p.remaining_days > 7 ? 'safe' : p.remaining_days  >= 0 ? 'critical' : 'expired'%>">
+          <div class="img"><img src="/uploads/<%= p.image_path%>" style="height: 200px;"></div>
+          <div class="product-info">
+            <div><span>Name: </span>
+              <%=p.title%>
+            </div>
+            <div><span>Stock: </span>
+              <%=p.stock%> Remaining
+            </div>
+            <div><span>Price: </span>
+              <%=p.normal_price%> tl
+            </div>
+            <div><span>Discounted Price: </span>
+              <%=p.discounted_price%> tl
+            </div>
+            <div><span>Expiration Date: </span>
+              <%=p.expiration_date.toLocaleDateString("tr-TR")%>
+            </div>
+            <div><span>Status: </span><%- p.remaining_days> 7 ? 'Safe' : p.remaining_days >= 0 ? 'About to expire!' :
+                'Expired'%></div>
+            <div class="operations">
+              <a href="/market/edit-product/<%=p.id%>" class="operation">Edit</a>
+              <a href="/market/delete-product/<%=p.id%>" class="operation">Delete</a>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+    </div>
+  </div>
+</body>
+
+</html>

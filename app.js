@@ -5,24 +5,31 @@ import bcrypt from "bcrypt";
 import db from "./db.js";
 import nodemailer from "nodemailer";
 import multer from "multer";
-import fs from "fs";
-import { error } from "console";
+import path from "path";
 
 const app = express();
 
-// upload klasörü yoksa oluştur
-if (!fs.existsSync("public/uploads")) {
-  fs.mkdirSync("public/uploads", { recursive: true });
-}
-
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: "public/uploads",
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.originalname);
-    },
-  }),
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "public/uploads/"),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) ?? "";
+    const name = path.basename(file.originalname, ext);
+    cb(null, `${Date.now()}-${name}${ext}`);
+  }
 });
+
+const fileFilter = (req, file, cb) => {
+  const allowed = [".jpg", ".jpeg", ".png", ".gif"];
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowed.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+    req.fileRejected = true;
+  }
+};
+
+const upload = multer({ storage, fileFilter });
 
 //burayı kontrol etmemiz lazım
 const transporter = nodemailer.createTransport({
@@ -51,7 +58,6 @@ async function sendVerificationMail(email, code) {
     console.log("Verification code:", code);
   }
 }
-// buraya kadar
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -67,12 +73,13 @@ app.use(
 );
 
 app.get("/", async (req, res) => {
-  res.render("index", { error: null });
+  res.render("main/index", { error: null });
 });
 
 app.get("/register-market", (req, res) => {
-  res.render("register-market", { error: null, old: {} });
+  res.render("market/register-market", { error: null, old: {} });
 });
+
 app.post("/register-market", async (req, res) => {
   const { email, marketName, password, city, district } = req.body;
 
@@ -117,7 +124,7 @@ app.post("/register-market", async (req, res) => {
 });
 
 app.get("/register-consumer", (req, res) => {
-  res.render("register-consumer", { error: null, old: {} });
+  res.render("consumer/register-consumer", { error: null, old: {} });
 });
 // app.post("/register-consumer", (req, res) => {
 //     const { email, fullName, password, city, district } = req.body;
@@ -303,7 +310,7 @@ app.post("/register-consumer", async (req, res) => {
 app.post("/verify", (req, res) => {
   const { email, code } = req.body;
 
-  res.render("index", {
+  res.render("main/index", {
     error: "Email verified successfully. You can login now.",
   });
 });
@@ -320,7 +327,7 @@ app.get("/verify", (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.render("index", {
+    return res.render("main/index", {
       error: "Please enter email and password.",
     });
   }
@@ -337,7 +344,7 @@ app.post("/login", async (req, res) => {
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
-    return res.render("index", {
+    return res.render("main/index", {
       error: "Email or password is wrong.",
     });
   }
@@ -385,7 +392,17 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     }
   }
 
-  res.render("dashboard-market", { arr, errors: [], message });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  arr.forEach(product => {
+    const expDate = new Date(product.expiration_date);
+    const diffMs = expDate - today;
+    product.remaining_days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    console.log(product.remaining_days)
+  });
+
+  res.render("market/dashboard-market", { arr, errors: [], message });
 });
 
 app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, res) => {
@@ -420,7 +437,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
 
   if (errors.length > 0) {
     const [arr] = await db.query(`SELECT * FROM products WHERE market_id = ?`, [req.session.user.id])
-    return res.render("dashboard-market", { arr, errors })
+    return res.render("market/dashboard-market", { arr, errors })
   }
   try {
     await db.query(
@@ -521,43 +538,88 @@ app.post("/market/delete-expired", checkMarket, async (req, res) => {
 
 // incele
 app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
-  const search = req.query.search || "";
-  let products = [];
+  let index = Number(req.query.page ?? 0)
+  const search = req.query.search ?? "";
+  let products = []
+
   //isim için ekledim
-  const [table] = await db.query("SELECT * FROM users WHERE id = ?", [
+  const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [
     req.session.user.id,
   ]);
-  const userName = table[0].full_name;
-  if (search !== "") {
-    const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [
-      req.session.user.id,
-    ]);
+  const userName = consumer[0].full_name;
+  const city = consumer[0].city;
+  const district = consumer[0].district;
 
-    const city = consumer[0].city;
-    const district = consumer[0].district;
-
+  if (req.query.pageNumber) {
+    let pageNumber = Number(req.query.pageNumber)
+    index = (pageNumber - 1) * 4
     const [arr] = await db.query(
       `SELECT products.*, users.market_name, users.district,
-       DATEDIFF(products.expiration_date, CURDATE()) AS days_left
-       FROM products, users
-       WHERE products.market_id = users.id
-       AND products.title LIKE ?
-       AND users.city = ?
-       AND products.expiration_date >= CURDATE()
-       ORDER BY users.district = ? DESC
-       LIMIT 4`,
+      DATEDIFF(products.expiration_date, CURDATE()) AS remaining_days
+      FROM products, users
+      WHERE products.market_id = users.id
+      AND products.title LIKE ?
+      AND users.city = ?
+      AND products.expiration_date >= CURDATE()
+      ORDER BY users.district = ? DESC
+      LIMIT ${index}, 4`,
       [`%${search}%`, city, district],
     );
+    const [[countRow]] = await db.query("select count(*) as total from products,users where products.market_id = users.id AND products.title LIKE ? AND users.city = ? AND products.expiration_date >= CURDATE()", [`%${search}%`, city])
+    const total = countRow.total
+
+    let page_count = Math.ceil(total / 4)
 
     products = arr;
-  }
 
-  res.render("dashboard-consumer", {
-    search: search,
-    products: products,
-    page: 1,
-    userName: userName,
-  });
+    res.render("consumer/dashboard-consumer", {
+      search: search,
+      products: products,
+      index,
+      maxSize: total,
+      page_count,
+      current_page: pageNumber,
+      userName: userName,
+    });
+  }
+  else if (search !== "") {
+    const [arr] = await db.query(
+      `SELECT products.*, users.market_name, users.district,
+      DATEDIFF(products.expiration_date, CURDATE()) AS remaining_days
+      FROM products, users
+      WHERE products.market_id = users.id
+      AND products.title LIKE ?
+      AND users.city = ?
+      AND products.expiration_date >= CURDATE()
+      ORDER BY users.district = ? DESC
+      LIMIT ${index}, 4`,
+      [`%${search}%`, city, district],
+    );
+    const [[countRow]] = await db.query("select count(*) as total from products,users where products.market_id = users.id AND products.title LIKE ? AND users.city = ? AND products.expiration_date >= CURDATE()", [`%${search}%`, city])
+    const total = countRow.total
+
+    let page_count = Math.ceil(total / 4)
+    let current_page = index / 4 + 1
+
+    products = arr;
+
+    res.render("consumer/dashboard-consumer", {
+      search: search,
+      products: products,
+      index,
+      maxSize: total,
+      page_count,
+      current_page,
+      userName: userName,
+    });
+  }
+  else {
+    res.render("consumer/dashboard-consumer", {
+      search: search,
+      products,
+      userName: userName,
+    });
+  }
 });
 
 app.listen(process.env.PORT, () => {

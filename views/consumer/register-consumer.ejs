@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Consumer Register</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <form action="/register-consumer" method="POST" class="card">
+            <h2>Consumer Register</h2>
+
+            <% if (error) { %>
+                <p class="error">
+                    <%= error %>
+                </p>
+                <% } %>
+                    <div>
+                        <label>Email</label>
+                        <input type="email" name="email" value="<%= old.email || '' %>" required>
+                    </div>
+                    <div>
+                        <label>Full Name</label>
+                        <input type="text" name="fullName" value="<%= old.fullName || '' %>" required>
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <div>
+                        <label>City</label>
+                        <input type="text" name="city" value="<%= old.city || '' %>" required>
+                    </div>
+                    <div>
+                        <label>District</label>
+                        <input type="text" name="district" value="<%= old.district || '' %>" required>
+                    </div>
+                    <button type="submit">Register</button>
+                    <a href="/">Back to login</a>
+        </form>
+    </div>
+
+</body>
+
+</html>

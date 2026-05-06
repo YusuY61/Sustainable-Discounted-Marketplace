@@ -5,122 +5,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
-  <link rel="stylesheet" href="/style.css">
-  <style>
-    form {
-      max-width: 500px;
-      margin: 30px auto;
-    }
+  <link rel="stylesheet" href="/styles/profile.css">
 
-    .gray-box {
-      background: #d9d9d9;
-      padding: 20px;
-      border-radius: 6px;
-    }
-
-    .gray-box label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .gray-box input {
-      background: white;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 14px;
-      margin-top: 4px;
-    }
-
-    .black-btn {
-      width: 100%;
-      background: black;
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 6px;
-      margin-top: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .black-btn:hover {
-      background: #333;
-    }
-
-    .gray-btn {
-      display: block;
-      max-width: 500px;
-      margin: 0 auto;
-      background: #d9d9d9;
-      color: black;
-      padding: 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .gray-btn:hover {
-      background: #c0c0c0;
-    }
-  </style>
 </head>
 
 <body>
 
-  <h2>My Profile</h2>
-
-  <% if (error) { %>
-    <p class="error"><%= error %></p>
-  <% } %>
-
-  <% if (success) { %>
-    <p class="success"><%= success %></p>
-  <% } %>
-
-  <form action="/profile-update" method="POST">
-    <div class="gray-box">
-      <div>
-        <label>Email</label>
-        <input type="email" name="email" value="<%= user.email || '' %>" required>
-      </div>
-
-      <div>
-        <label><%= user.role === 'market' ? 'Market Name' : 'Full Name' %></label>
-        <input type="text" name="name"
-          value="<%= (user.role === 'market' ? user.market_name : user.full_name) || '' %>" required>
-      </div>
-
-      <div>
-        <label>City</label>
-        <input type="text" name="city" value="<%= user.city || '' %>" required>
-      </div>
-
-      <div>
-        <label>District</label>
-        <input type="text" name="district" value="<%= user.district || '' %>" required>
-      </div>
-
-      <hr>
-      <small>Leave password fields empty if you don't want to change it.</small>
-
-      <div>
-        <label>Current Password</label>
-        <input type="password" name="currentPassword">
-      </div>
-
-      <div>
-        <label>New Password</label>
-        <input type="password" name="newPassword">
-      </div>
-    </div>
-
-    <button type="submit" class="black-btn">Update Profile</button>
-  </form>
-
-  <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" class="gray-btn">Back to dashboard</a>
+<div class="container">
+  
+    <h2>My Profile</h2>
+  
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+  
+    <% if (success) { %>
+      <p class="success"><%= success %></p>
+    <% } %>
+  
+    <form action="/profile-update" method="POST" id="update_form">
+        <div class="input_container">
+          <label>Email: </label>
+          <input type="email" name="email" value="<%= user.email || '' %>" required>
+        </div>
+  
+        <div class="input_container">
+          <label><%= user.role === 'market' ? 'Market Name: ' : 'Full Name:' %></label>
+          <input type="text" name="name"
+            value="<%= (user.role === 'market' ? user.market_name : user.full_name) || '' %>" required>
+        </div>
+  
+        <div class="input_container">
+          <label>City</label>
+          <input type="text" name="city" value="<%= user.city || '' %>" required>
+        </div>
+  
+        <div class="input_container">
+          <label>District</label>
+          <input type="text" name="district" value="<%= user.district || '' %>" required>
+        </div>
+  
+        <hr>
+        <small>Leave password fields empty if you don't want to change it.</small>
+  
+        <div class="input_container">
+          <label>Current Password</label>
+          <input type="password" name="currentPassword">
+        </div>
+  
+        <div class="input_container">
+          <label>New Password</label>
+          <input type="password" name="newPassword">
+        </div>
+  
+      <button type="submit" class="black-btn">Update Profile</button>
+    </form>
+  
+    <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" class="purple-btn">Back to dashboard</a>
+</div>
 
 </body>
 

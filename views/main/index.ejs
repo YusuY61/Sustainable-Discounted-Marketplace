@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Discount Marketplace</title>
+  <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body>
-  <div>
-    <h1>Welcome to the Discount Marketplace</h1>
+  <div class="container">
+    <h1>Welcome to the Sustainable Discount Marketplace</h1>
+    <h3>Please login or register to continue</h3>
 
     <% if (error) { %>
       <p class="error">
@@ -18,14 +19,13 @@
       </p>
       <% } %>
 
-        <form action="/login" method="POST" class="card">
-          <h2>Login</h2>
-          <div>
+        <form action="/login" method="POST" id="login_form">
+          <span id="login_text">Login</span>
+          <div class="input_container">
             <label for="email">Email:</label>
             <input type="email" name="email" required>
           </div>
-          <br><br>
-          <div>
+          <div class="input_container">
             <label for="password">Password:</label>
             <input type="password" name="password" required>
           </div>
@@ -33,13 +33,14 @@
         </form>
 
         <div class="links">
-          <div class="reg">
+          <div class="link">
             <a href="/register-market">Register as Market</a>
           </div>
-          <div class="reg">
+          <div class="link">
             <a href="/register-consumer">Register as Consumer</a>
           </div>
         </div>
+
   </div>
 </body>
 
