@@ -416,11 +416,11 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
       `INSERT into products (market_id, title, stock, normal_price, discounted_price, expiration_date, image_path) values (?, ?, ?, ?, ?, ?, ?) `,
       [
         req.session.user.id,
-        req.body.name.trim(),
-        req.body.stock,
-        req.body.normalPrice,
-        req.body.discountedPrice,
-        req.body.expirationDate,
+        name,
+        stock,
+        normalPrice,
+        discountedPrice,
+        expirationDate,
         imagePath,
       ],
     );
@@ -451,7 +451,7 @@ app.post("/market/edit-product/:id", checkMarket, upload.single("image"), async 
       await db.query(
         `UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image_path = ? WHERE id = ? AND market_id = ?`,
         [
-          req.body.name,
+          req.body.name.trim(),
           req.body.stock,
           req.body.normalPrice,
           req.body.discountedPrice,
@@ -466,7 +466,7 @@ app.post("/market/edit-product/:id", checkMarket, upload.single("image"), async 
       await db.query(
         `UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ? WHERE id = ? AND market_id = ?`,
         [
-          req.body.name,
+          req.body.name.trim(),
           req.body.stock,
           req.body.normalPrice,
           req.body.discountedPrice,
