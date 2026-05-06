@@ -374,7 +374,18 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     `SELECT * FROM products WHERE market_id = ?`,
     [req.session.user.id],
   );
-  res.render("dashboard-market", { arr, errors: [] });
+
+  let message = null;
+  if (req.query.deleted !== undefined) {
+    const count = parseInt(req.query.deleted);
+    if (count > 0) {
+      message = `${count} expired product(s) deleted successfully.`;
+    } else {
+      message = "No expired products to delete.";
+    }
+  }
+
+  res.render("dashboard-market", { arr, errors: [], message });
 });
 
 app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, res) => {
@@ -492,6 +503,19 @@ app.post("/market/delete-product/:id", checkMarket, async (req, res) => {
     res.redirect("/market/dashboard");
   } catch (error) {
     res.status(500).send("Delete error");
+  }
+});
+
+app.post("/market/delete-expired", checkMarket, async (req, res) => {
+  try {
+    const [result] = await db.query(
+      "DELETE FROM products WHERE market_id = ? AND expiration_date < CURDATE()",
+      [req.session.user.id],
+    );
+    res.redirect(`/market/dashboard?deleted=${result.affectedRows}`);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Delete expired error");
   }
 });
 

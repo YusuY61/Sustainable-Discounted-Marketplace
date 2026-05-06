@@ -6,185 +6,296 @@
   <title>Market Dashboard</title>
   <link rel="stylesheet" href="/style.css" />
   <style>
-    body{
-      max-width: 100%;
-      /* background-color: #b91c1c; */
-    }
-    .container{
+    .top-bar {
       display: flex;
-      flex-direction: row;
-      /* background-color: aqua; */
-      max-width: fit-content;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
     }
 
-    .card{
-      max-width: 1000px;
-      margin-left: 50px;
-      display: flex;
-      flex-direction: column;
+    .top-bar h1 {
+      margin: 0;
     }
 
-    form {
-      max-width: 200px;
+    .logout-btn {
+      background: #d9d9d9;
+      color: black;
+      padding: 12px 24px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    .profile-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #d9d9d9;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      text-decoration: none;
+    }
+
+    .dashboard {
+      display: flex;
+      gap: 20px;
+    }
+
+    .left-col {
+      width: 320px;
+    }
+
+    .right-col {
+      flex: 1;
+    }
+
+    .gray-box {
+      background: #d9d9d9;
+      padding: 20px;
+      border-radius: 6px;
+    }
+
+    .gray-box h3 {
+      margin-top: 0;
+    }
+
+    .gray-box label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .gray-box input {
+      width: 100%;
+      border-radius: 20px;
+      border: none;
+      padding: 8px 14px;
+      background: white;
+      margin-top: 4px;
+    }
+
+    .black-btn {
+      width: 100%;
+      background: black;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .black-btn:hover {
+      background: #333;
+    }
+
+    .product-list {
+      min-height: 500px;
+    }
+
+    .table-wrap {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    td {
+      padding: 12px 10px;
+      vertical-align: middle;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    table tr:first-child td {
+      background: black;
+      color: white;
+      font-weight: bold;
+      border-bottom: none;
+    }
+
+    table tr:last-child td {
+      border-bottom: none;
+    }
+
+    td img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
     }
 
     tr.expired {
       background: #fee2e2;
     }
 
-    td{
-      padding: 10 12px;
-      /* font-size: 18px; */
-      vertical-align: middle;
-      text-align: center;
-    }
-
-    td:nth-child(2) {
-      width: 180px;
-      max-width: 180px;
-      white-space: nowrap;
-      overflow-x: auto;
-      overflow-y: hidden;
-      text-overflow: clip;
-      padding: 0 10px;
-    }
-
-    td img{
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      display: block;
-    }
-
-    tr:first-child td{
-      padding: 0px 10px;
-    }
-
     .expired-text {
       color: #b91c1c;
       font-weight: bold;
-
     }
 
-    .small-info {
-      font-size: 12px;
-      color: #555;
-      text-align: left;
-      margin-top: 8px;
+    .pill-link {
+      display: inline-block;
+      padding: 6px 14px;
+      background: black;
+      color: white;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 13px;
     }
 
-    #btns{
-      margin-top: auto;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+    .pill-link:hover {
+      background: #333;
+    }
 
+    .delBtn {
+      background: #b91c1c;
+      color: white;
+      width: auto;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
     }
-    .delBtn{
-      background: transparent;
-      color: #b91c1c;
-      margin-bottom: 16px;
+
+    .delBtn:hover {
+      background: #ef4444;
     }
-    .delBtn:hover{
-      background-color: red;
-      color: #ddd;
-    }
-    #errors{
+
+    #errors {
       color: red;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Market Dashboard</h1>
-  <div class="container">
-    
+  <div class="top-bar">
+    <a href="/" class="logout-btn">← LOGOUT</a>
+    <h1>Market Dashboard</h1>
+    <a href="/profile" class="profile-icon">👤</a>
+  </div>
 
-    <form action="/market/dashboard" method="post" enctype="multipart/form-data">
-      <h2>Add Product</h2>
-      <input name="name" type="text" placeholder="Name" />
-      <input name="stock" type="text" placeholder="Stock" />
-      <input name="normalPrice" type="text" placeholder="Normal Price" />
-      <input name="discountedPrice" type="text" placeholder="Discounted Price" />
-      <input name="expirationDate" type="date" placeholder="Expiration Date" />
-      <input name="image" type="file" accept="image/*" />
-      <p class="small-info">Products with past expiration dates will be marked as expired.</p>
-      <button type="submit">ADD</button>
-    </form>
+  <% if (typeof message !== 'undefined' && message) { %>
+    <p class="success"><%= message %></p>
+  <% } %>
 
-    <div class="card">
-      <!-- <p>Market user will manage products here.</p> -->
-      <table>
-        <tr>
-          <td>Image</td>
-          <td>Title</td>
-          <td>Stock</td>
-          <td>Normal Price</td>
-          <td>Discounted Price</td>
-          <td>Expiration Date</td>
-          <td>Status</td>
-          <td>Edit</td>
-          <td>Delete</td>
-        </tr>
-        <% const today=new Date(); today.setHours(0, 0, 0, 0); %>
-          <% arr.forEach( p=> {
-            const expired = p.expiration_date < today; %>
-              <tr class="<%= expired ? 'expired' : '' %>">
-                <td>
-                  <% if (p.image_path) { %>
-                    <img src="/uploads/<%= p.image_path %>" width="60" />
-                    <% } %>
-                </td>
-                <td>
-                  <%= p.title %>
-                </td>
-                <td>
-                  <%= p.stock %>
-                </td>
-                <td>
-                  <%= p.normal_price %> TL
-                </td>
-                <td>
-                  <%= p.discounted_price %> TL
-                </td>
-                <td>
-                  <%= p.expiration_date.toLocaleDateString("tr-TR") %>
-                </td>
-                <td>
-                  <% if (expired) { %>
-                    <span class="expired-text">EXPIRED</span>
-                    <% } else { %>
-                      Active
-                      <% } %>
-                </td>
-                <td>
-                  <a href="/market/edit-product/<%= p.id %>">Edit</a>
-                </td>
-                <td>
-                  <form action="/market/delete-product/<%= p.id %>" method="post">
-                    <button class="delBtn" type="submit">Delete</button>
-                  </form>
-                </td>
-              </tr>
-              <% }) %>
-      </table>
-      <div id="btns">
-        <a href="/">Logout ➜]</a>
-        <a href="/profile">Edit Profile👤</a>
-      </div>
-      
+  <div class="dashboard">
+
+    <div class="left-col">
+      <form action="/market/dashboard" method="post" enctype="multipart/form-data">
+        <div class="gray-box">
+          <h3>Product Info</h3>
+
+          <label>Full Name</label>
+          <input name="name" type="text" placeholder="Value" />
+
+          <label>Stock</label>
+          <input name="stock" type="text" placeholder="Value" />
+
+          <label>Price</label>
+          <input name="normalPrice" type="text" placeholder="Value" />
+
+          <label>Discounted Price</label>
+          <input name="discountedPrice" type="text" placeholder="Value" />
+
+          <label>Expiration Date</label>
+          <input name="expirationDate" type="date" />
+
+          <label>Image</label>
+          <input name="image" type="file" accept="image/*" />
+        </div>
+        <button type="submit" class="black-btn">Add Product</button>
+      </form>
     </div>
-  </div>
-  <div id="errors">
-    <% if(errors.length > 0){ %>
-      <h1 style="color: red;">Product couldn't be added:</h1>
-    <% errors.forEach((e) => { %>
-      <p><%=e%></p>
-    <% }) %>
-    <%}%>
+
+    <div class="right-col">
+      <div class="gray-box product-list">
+        <div class="table-wrap">
+          <table>
+          <tr>
+            <td>Image</td>
+            <td>Title</td>
+            <td>Stock</td>
+            <td>Normal Price</td>
+            <td>Discounted Price</td>
+            <td>Expiration Date</td>
+            <td>Status</td>
+            <td>Edit</td>
+            <td>Delete</td>
+          </tr>
+          <% const today=new Date(); today.setHours(0, 0, 0, 0); %>
+            <% arr.forEach( p=> {
+              const expired = p.expiration_date < today; %>
+                <tr class="<%= expired ? 'expired' : '' %>">
+                  <td>
+                    <% if (p.image_path) { %>
+                      <img src="/uploads/<%= p.image_path %>" />
+                      <% } %>
+                  </td>
+                  <td>
+                    <%= p.title %>
+                  </td>
+                  <td>
+                    <%= p.stock %>
+                  </td>
+                  <td>
+                    <%= p.normal_price %> TL
+                  </td>
+                  <td>
+                    <%= p.discounted_price %> TL
+                  </td>
+                  <td>
+                    <%= p.expiration_date.toLocaleDateString("tr-TR") %>
+                  </td>
+                  <td>
+                    <% if (expired) { %>
+                      <span class="expired-text">EXPIRED</span>
+                      <% } else { %>
+                        Active
+                        <% } %>
+                  </td>
+                  <td><a href="/market/edit-product/<%= p.id %>" class="pill-link">Edit</a></td>
+                  <td>
+                    <form action="/market/delete-product/<%= p.id %>" method="post">
+                      <button class="delBtn" type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+          </table>
+        </div>
+      </div>
+      <form action="/market/delete-expired" method="post"
+        onsubmit="return confirm('Are you sure you want to delete all expired products? This cannot be undone.');">
+        <button type="submit" class="black-btn">Delete Expired Products</button>
+      </form>
+    </div>
 
   </div>
+
+  <div id="errors">
+    <% if(typeof errors !=='undefined' && errors.length> 0){ %>
+      <h1 style="color: red;">Product couldn't be added:</h1>
+      <% errors.forEach((e)=> { %>
+        <p>
+          <%= e %>
+        </p>
+        <% }) %>
+          <% } %>
+  </div>
+
 </body>
 
 </html>
