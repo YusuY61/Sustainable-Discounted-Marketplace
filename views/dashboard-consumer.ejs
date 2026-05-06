@@ -12,10 +12,15 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      position: relative;
     }
 
     .top-bar h1 {
       margin: 0;
+      text-align: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .logout-btn {
@@ -37,12 +42,14 @@
       justify-content: center;
       font-size: 22px;
       text-decoration: none;
+      margin-left: auto;
     }
 
     /* ARAMA KUTUSU: input + buton yan yana */
     .search-bar {
       display: flex;
       margin-bottom: 30px;
+      margin: 0 auto 30px;
     }
 
     .search-bar input {
@@ -59,27 +66,30 @@
       color: white;
       border: none;
       width: 60px;
+      height: 100%;
       border-radius: 0 6px 6px 0;
       font-size: 20px;
       cursor: pointer;
     }
 
     /* ÜRÜN LİSTESİNİ SARAN GRİ KUTU */
-    .product-list-box {
+    /*.product-list-box {
       background: #d9d9d9;
       padding: 20px;
       border-radius: 6px;
-    }
+    }  şimdilik commente aldım*/
 
     /* GRID: 4 sütunlu ürün düzeni */
     .products {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
+      justify-content: center;
     }
 
     /* TEK ÜRÜN KARTI */
     .product-card {
+      width: 230px;
       background: white;
       border-radius: 6px;
       overflow: hidden;
@@ -226,7 +236,7 @@
 
   <form class="search-bar" action="/consumer/dashboard" method="GET">
     <input type="text" name="search" value="<%= search || '' %>" placeholder="Search product...">
-    <button type="submit">🔍</button>
+    <button type="submit" class="searchb">🔍</button>
   </form>
 
   <h2 style="text-align:center">Product List</h2>
