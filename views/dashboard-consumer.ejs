@@ -219,7 +219,8 @@
 
   <div class="top-bar">
     <a href="/" class="logout-btn">← LOGOUT</a>
-    <h1>Consumer Dashboard</h1>
+    <h1>Welcome, <%= userName || "Consumer" %>
+    </h1>
     <a href="/profile" class="profile-icon">👤</a>
   </div>
 
@@ -231,26 +232,34 @@
   <h2 style="text-align:center">Product List</h2>
 
   <div class="product-list-box">
-    <% if (products && products.length > 0) { %>
+    <% if (products && products.length> 0) { %>
       <div class="products">
-        <% products.forEach(product => { %>
+        <% products.forEach(product=> { %>
           <div class="product-card">
 
             <div class="product-img">
               <% if (product.image_path) { %>
                 <img src="/uploads/<%= product.image_path %>" />
-              <% } else { %>
-                NO IMAGE
-              <% } %>
+                <% } else { %>
+                  NO IMAGE
+                  <% } %>
             </div>
 
             <div class="product-info">
-              <h3><%= product.title %></h3>
-              <p>Market: <%= product.market_name %></p>
-              <p>District: <%= product.district %></p>
-              <p>Stock: <%= product.stock %></p>
-              <p>Expiration Date: <%= product.expiration_date.toLocaleDateString("tr-TR") %></p>
-              <p class="price"><%= product.discounted_price %> TL</p>
+              <h3>
+                <%= product.title %>
+              </h3>
+              <p>Market: <%= product.market_name %>
+              </p>
+              <p>District: <%= product.district %>
+              </p>
+              <p>Stock: <%= product.stock %>
+              </p>
+              <p>Expiration Date: <%= product.expiration_date.toLocaleDateString("tr-TR") %>
+              </p>
+              <p class="price">
+                <%= product.discounted_price %> TL
+              </p>
             </div>
 
             <form action="/cart/add" method="POST">
@@ -264,24 +273,26 @@
             </form>
 
           </div>
-        <% }) %>
+          <% }) %>
       </div>
-    <% } else if (search) { %>
-      <p class="empty-msg">No product found.</p>
-    <% } else { %>
-      <p class="empty-msg">Search a product to see discounted items.</p>
-    <% } %>
+      <% } else if (search) { %>
+        <p class="empty-msg">No product found.</p>
+        <% } else { %>
+          <p class="empty-msg">Search a product to see discounted items.</p>
+          <% } %>
   </div>
 
-  <% if (products && products.length > 0) { %>
+  <% if (products && products.length> 0) { %>
     <div class="pagination">
-      <% for (let i = 1; i <= 4; i++) { %>
-        <a href="?search=<%= search %>&page=<%= i %>" class="<%= page === i ? 'active' : '' %>"><%= i %></a>
-      <% } %>
+      <% for (let i=1; i <=4; i++) { %>
+        <a href="?search=<%= search %>&page=<%= i %>" class="<%= page === i ? 'active' : '' %>">
+          <%= i %>
+        </a>
+        <% } %>
     </div>
-  <% } %>
+    <% } %>
 
-  <a href="/cart" class="cart-btn">🛒</a>
+      <a href="/cart" class="cart-btn">🛒</a>
 
 </body>
 
