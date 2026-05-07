@@ -71,6 +71,7 @@ body {
 .products {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 10px;
 
   border: 1px solid black;
@@ -115,4 +116,14 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+#deleteAllBtn{
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
 }

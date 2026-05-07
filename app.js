@@ -411,7 +411,7 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     console.log(product.remaining_days)
   });
 
-  res.render("market/dashboard-market", { arr, errors: [], message });
+  res.render("market/dashboard-market", { arr, errors: [], message, oldForm: {} });
 });
 
 app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, res) => {
@@ -446,7 +446,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
 
   if (errors.length > 0) {
     const [arr] = await db.query(`SELECT * FROM products WHERE market_id = ?`, [req.session.user.id])
-    return res.render("market/dashboard-market", { arr, errors })
+    return res.render("market/dashboard-market", { arr, errors, oldForm: req.body })
   }
   try {
     await db.query(
@@ -520,7 +520,7 @@ app.post("/market/edit-product/:id", checkMarket, upload.single("image"), async 
   }
 });
 
-app.post("/market/delete-product/:id", checkMarket, async (req, res) => {
+app.get("/market/delete-product/:id", checkMarket, async (req, res) => {
   try {
     await db.query(
       "DELETE FROM products WHERE id = ? AND market_id = ?",

@@ -13,6 +13,7 @@
     <div class="navbar">
       <a href="/" class="link-btn">Logout</a>
       <a href="/profile" class="link-btn">Profil</a>
+
     </div>
     <div class="register">
       <div class="errors">
@@ -22,28 +23,28 @@
       <form action="/market/dashboard" method="post" enctype="multipart/form-data" id="register-form">
         <div class="property">
           <label for="product-name">Product Name:</label>
-          <input type="text" name="name" id="product-name" placeholder="Product Name" required>
+          <input type="text" name="name" id="product-name" value="<%= oldForm.name || '' %>" placeholder="Product Name" required>
         </div>
 
         <div class="property">
           <label for="product-stock">Stock:</label>
-          <input type="number" name="stock" id="product-stock" placeholder="Stock" required>
+          <input type="number" name="stock" id="product-stock" value="<%= oldForm.stock || '' %>" placeholder="Stock" required>
         </div>
 
         <div class="property">
           <label for="product-price">Price:</label>
-          <input type="number" name="normalPrice" id="product-price" placeholder="Price" required>
+          <input type="number" name="normalPrice" id="product-price" value="<%= oldForm.normalPrice || '' %>" placeholder="Price" required>
         </div>
 
         <div class="property">
           <label for="product-discounted-price">Discounted Price: </label>
-          <input type="number" name="discountedPrice" id="product-discounted-price" placeholder="Discounted Price"
+          <input type="number" name="discountedPrice" id="product-discounted-price" value="<%= oldForm.discountedPrice || '' %>" placeholder="Discounted Price"
             required>
         </div>
 
         <div class="property">
           <label for="product-expiration-date">Expiration Date:</label>
-          <input type="date" name="expirationDate" id="product-expiration-date" required>
+          <input type="date" name="expirationDate" id="product-expiration-date" value="<%= oldForm.expirationDate || '' %>" required>
         </div>
 
         <div class="property">
@@ -84,6 +85,10 @@
           </div>
         </div>
         <% }) %>
+        <form action="/market/delete-expired" method="post"
+          onsubmit="return confirm('Are you sure you want to delete all expired products? This cannot be undone.');">
+          <button id="deleteAllBtn" type="submit" class="black-btn">Delete Expired Products</button>
+        </form>
     </div>
   </div>
 </body>
