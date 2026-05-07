@@ -84,7 +84,7 @@ app.post("/register-market", async (req, res) => {
   const { email, marketName, password, city, district } = req.body;
 
   if (!email || !marketName || !password || !city || !district) {
-    return res.render("register-market", {
+    return res.render("market/register-market", {
       error: "Please fill all fields.",
       old: req.body,
     });
@@ -95,7 +95,7 @@ app.post("/register-market", async (req, res) => {
   ]);
 
   if (existing.length > 0) {
-    return res.render("register-market", {
+    return res.render("market/register-market", {
       error: "This email is already registered.",
       old: req.body,
     });
