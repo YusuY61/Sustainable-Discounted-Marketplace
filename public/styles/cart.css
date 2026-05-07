@@ -14,7 +14,7 @@ h1 {
   width: 200px;
 }
 
-.container {
+#container {
   margin: 0 auto;
 
   display: flex;
@@ -41,8 +41,8 @@ h1 {
   width: 800px;
   height: 300px;
 
-  border-radius: 10px;
-  border: 1px solid #2B2B2B;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 #items {
@@ -60,6 +60,35 @@ h1 {
   width: 885px;
 
   border-radius: 8px;
+  gap: 10px;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+
+  border-radius: 8px;
+  border: 1px solid #B3B3B3;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0px 10px;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.product-name {
+  margin: 5px 10px;
 }
 
 #total {
@@ -71,4 +100,34 @@ h1 {
   width: 278px;
 
   border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 5px;
+
+  user-select: none;
+
+  border-radius: 20px;
+  border: 1px solid #D4D4D4;
+  width: max-content;
+
+  padding: 5px 10px;
+}
+
+.counter {
+  width: 16px;
+  text-align: center;
+}
+
+.button {
+  width: 16px;
+  height: 16px;
+}
+
+.price {
+  font-weight: bold;
 }

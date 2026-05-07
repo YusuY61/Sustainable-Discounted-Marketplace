@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 25px;
     font-family: Arial;
-    background-color: #EDF3F9;
+    background-color: #edeff3;
     color: black;
 }
 
@@ -38,9 +38,9 @@ h1 {
     width: 60%;
     margin: 0px;
     padding: 22px;
-    background-color: #D0DCE9;
-    border: 1px solid black;
+    background-color: #fff;
     border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 input {
@@ -61,11 +61,13 @@ button {
     margin-top: 18px;
     padding: 10px;
     border: 0;
-    border-radius: 5px;
+    border-radius: 8px;
     background-color: #6449FF;
     color: white;
     font-weight: bold;
     cursor: pointer;
+
+    font-size: 15px;
 }
 
 button:hover {
@@ -100,8 +102,8 @@ button:hover {
 .link {
     width: 210px;
     padding: 0;
-    background-color: #D0DCE9;
-    border: 1px solid black;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     text-align: center;
 }

@@ -392,7 +392,6 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     const expDate = new Date(product.expiration_date);
     const diffMs = expDate - today;
     product.remaining_days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    console.log(product.remaining_days)
   });
 
   res.render("market/dashboard-market", { arr, errors: [], message, oldForm: {} });
@@ -639,20 +638,63 @@ app.post("/cart/add", checkConsumer, async (req, res) => {
   res.json({ success: true });
 })
 
-app.get("/cart", checkConsumer, async (req, res) => {
+app.post("/cart/remove", checkConsumer, async (req, res) => {
+  const {productId} = req.body
   const consumerId = req.session.user.id
 
-  const [products] = await db.query(
-  `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price, products.image_path 
-   FROM cart_items 
-   JOIN products ON cart_items.product_id = products.id 
-   WHERE cart_items.consumer_id = ?`,
-  [consumerId]
-);
+  const [items] = await db.query(
+    "SELECT id, quantity FROM cart_items WHERE consumer_id = ? AND product_id = ?",
+    [consumerId, productId]
+  )
 
-  res.render("cart", {products});
+  if (items.length === 0) {
+    return res.json({ success: false })
+  }
+
+  const item = items[0]
+
+  if (item.quantity > 1) {
+    await db.query(
+      "UPDATE cart_items SET quantity = quantity - 1 WHERE consumer_id = ? AND product_id = ?",
+      [consumerId, productId]
+    );
+  } else {
+    await db.query(
+      "DELETE FROM cart_items WHERE consumer_id = ? AND product_id = ?",
+      [consumerId, productId]
+    );
+  }
+
+  res.json({ success: true })
+})
+
+app.get("/cart", checkConsumer, async (req, res) => {
+//   const consumerId = req.session.user.id
+
+//   const [products] = await db.query(
+//   `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price, products.image_path 
+//    FROM cart_items 
+//    JOIN products ON cart_items.product_id = products.id 
+//    WHERE cart_items.consumer_id = ?`,
+//   [consumerId]
+// );
+
+  res.render("cart", {products: []});
 });
 
+app.get("/cart/items", checkConsumer, async (req, res) => {
+    const consumerId = req.session.user.id
+
+  const [products] = await db.query(
+    `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price as price, products.image_path 
+    FROM cart_items 
+    JOIN products ON cart_items.product_id = products.id 
+    WHERE cart_items.consumer_id = ?`,
+    [consumerId]
+  );
+
+  res.json(products);
+})
 
 app.listen(process.env.PORT, () => {
   console.log(`Running on port ${process.env.PORT}`);
