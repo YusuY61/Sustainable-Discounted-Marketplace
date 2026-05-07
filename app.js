@@ -615,23 +615,23 @@ app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
   }
 });
 
-app.post("", checkConsumer, async (req, res) => {
+app.post("/cart/add", checkConsumer, async (req, res) => {
   const {productId} = req.body
   const consumerId = req.session.user.id
 
   const [existing] = await db.query(
-    "SELECT id FROM cart WHERE consumer_id = ? AND product_id = ?",
+    "SELECT id FROM cart_items WHERE consumer_id = ? AND product_id = ?",
     [consumerId, productId]
   )
 
   if (existing.length > 0) {
     await db.query(
-      "UPDATE cart SET quantity = quantity + 1 WHERE consumer_id = ? AND product_id = ?",
+      "UPDATE cart_items SET quantity = quantity + 1 WHERE consumer_id = ? AND product_id = ?",
       [consumerId, productId]
     );
   } else {
     await db.query(
-      "INSERT INTO cart (consumer_id, product_id, quantity) VALUES (?, ?, 1)",
+      "INSERT INTO cart_items (consumer_id, product_id, quantity) VALUES (?, ?, 1)",
       [consumerId, productId]
     );
   }
@@ -639,6 +639,19 @@ app.post("", checkConsumer, async (req, res) => {
   res.json({ success: true });
 })
 
+app.get("/cart", checkConsumer, async (req, res) => {
+  const consumerId = req.session.user.id
+
+  const [products] = await db.query(
+  `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price, products.image_path 
+   FROM cart_items 
+   JOIN products ON cart_items.product_id = products.id 
+   WHERE cart_items.consumer_id = ?`,
+  [consumerId]
+);
+
+  res.render("cart", {products});
+});
 
 
 app.listen(process.env.PORT, () => {

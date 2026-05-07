@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <link rel="stylesheet" href="/styles/cart.css">
+</head>
+<body>
+  <div class="container">
+    <% if (products.length === 0) { %>
+    <div id="emptyCart">
+      <img id="empty_icon" src="icon/empty_cart.png">
+      <h2>Your cart is empty!</h2>
+    </div>
+    <%} else { %>
+    <div id="items">
+      <div id="cart">
+        <p id="cartTitle">My Cart (<%=products.length%>)</p>
+        <hr class="line">
+        <% products.forEach(p=> { %>
+        <div class="item">
+          <div class="img"><img src="/uploads/<%= p.image_path%>" style="height: 150px; width: 150px;"></div>
+          <div class="product-info">
+            
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <div id="total">
+        <span>Order Summary</span>
+      </div>
+    </div>
+
+    <% } %>
+  </div>
+</body>
+</html>
