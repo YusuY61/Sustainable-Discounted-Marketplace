@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consumer Dashboard</title>
   <link rel="stylesheet" href="/styles/consumer/consumer-dashboard.css">
+  <script src="/scripts/consumer/dashboard-consumer.js"></script>
 </head>
 
 <body>
@@ -49,6 +50,7 @@
                     <%=p.expiration_date.toLocaleDateString("tr-TR")%>
                   </div>
                   <div><span>Status: </span><%- p.remaining_days> 7 ? 'Safe' : p.remaining_days >= 0 ? 'About to expire!' : 'Expired'%></div>
+                  <button class="add-to-cart" data-id="<%= p.id %>">Add to Cart</button>
                 </div>
               </div>
               <% }) %>

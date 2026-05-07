@@ -19,6 +19,12 @@
       </p>
       <% } %>
 
+      <% if (typeof success !== 'undefined' && success) { %>
+      <p class="success">
+        <%= success %>
+      </p>
+      <% } %>
+
         <form action="/login" method="POST" id="login_form">
           <span id="login_text">Login</span>
           <div class="input_container">

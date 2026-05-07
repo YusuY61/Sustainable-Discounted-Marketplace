@@ -85,6 +85,8 @@ body {
   flex-direction: row;
 
   padding: 10px;
+
+  background-color: antiquewhite;
 }
 
 .critical {

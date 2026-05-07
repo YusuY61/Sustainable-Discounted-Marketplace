@@ -116,10 +116,10 @@ app.post("/register-market",
     100000 + Math.random() * 900000,
   ).toString();
 
-  // await db.query(
-  //   "INSERT INTO users (email, password, market_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'market', ?, false)",
-  //   [email, hashedPassword, marketName, city, district, verificationCode],
-  // );
+  await db.query(
+    "INSERT INTO users (email, password, market_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'market', ?, false)",
+    [email, hashedPassword, marketName, city, district, verificationCode],
+  );
 
   console.log("Market verification code:", verificationCode);
   await sendVerificationMail(email, verificationCode);
@@ -135,23 +135,6 @@ app.post("/register-market",
 app.get("/register-consumer", (req, res) => {
   res.render("consumer/register-consumer", { error: null, old: {} });
 });
-// app.post("/register-consumer", (req, res) => {
-//     const { email, fullName, password, city, district } = req.body;
-//     if (!email || !fullName || !password || !city || !district) {
-//         return res.render("register-consumer", {
-//             error: "Please fill all fields.",
-//             old: req.body
-//         });
-//     }
-//     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-//     console.log("Consumer verification code:", verificationCode);
-//     res.render("verify", {
-//         email: email,
-//         code: verificationCode,
-//         message: "Registration completed. Please enter the verification code.",
-//         error: null
-//     });
-// });
 
 app.get("/profile", async (req, res) => {
   if (!req.session.user) {
@@ -318,9 +301,10 @@ app.post("/register-consumer", async (req, res) => {
 
 app.post("/verify", (req, res) => {
   const { email, code } = req.body;
-
+  
   res.render("main/index", {
-    error: "Email verified successfully. You can login now.",
+    success: "Email verified successfully. You can login now.",
+    error: null
   });
 });
 
@@ -630,6 +614,32 @@ app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
     });
   }
 });
+
+app.post("", checkConsumer, async (req, res) => {
+  const {productId} = req.body
+  const consumerId = req.session.user.id
+
+  const [existing] = await db.query(
+    "SELECT id FROM cart WHERE consumer_id = ? AND product_id = ?",
+    [consumerId, productId]
+  )
+
+  if (existing.length > 0) {
+    await db.query(
+      "UPDATE cart SET quantity = quantity + 1 WHERE consumer_id = ? AND product_id = ?",
+      [consumerId, productId]
+    );
+  } else {
+    await db.query(
+      "INSERT INTO cart (consumer_id, product_id, quantity) VALUES (?, ?, 1)",
+      [consumerId, productId]
+    );
+  }
+
+  res.json({ success: true });
+})
+
+
 
 app.listen(process.env.PORT, () => {
   console.log(`Running on port ${process.env.PORT}`);
