@@ -6,6 +6,8 @@ import db from "./db.js";
 import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
+import { body, validationResult } from 'express-validator';
+
 
 const app = express();
 
@@ -80,15 +82,22 @@ app.get("/register-market", (req, res) => {
   res.render("market/register-market", { error: null, old: {} });
 });
 
-app.post("/register-market", async (req, res) => {
-  const { email, marketName, password, city, district } = req.body;
+app.post("/register-market", 
+  body("email").isEmail().withMessage("Please enter a valid email!"),
+  body("password").isLength({min: 8}).withMessage("Password must be at least 8 characters!"),
+  body("city").not().matches(/\d/).withMessage("City cannot contain numbers."),
+  body("district").not().matches(/\d/).withMessage("District cannot contain numbers."),
+  async (req, res) => {
 
-  if (!email || !marketName || !password || !city || !district) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return res.render("market/register-market", {
-      error: "Please fill all fields.",
+      error: errors.array()[0].msg,
       old: req.body,
     });
   }
+
+  const { email, marketName, password, city, district } = req.body;
 
   const [existing] = await db.query("SELECT id FROM users WHERE email = ?", [
     email,
@@ -107,10 +116,10 @@ app.post("/register-market", async (req, res) => {
     100000 + Math.random() * 900000,
   ).toString();
 
-  await db.query(
-    "INSERT INTO users (email, password, market_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'market', ?, false)",
-    [email, hashedPassword, marketName, city, district, verificationCode],
-  );
+  // await db.query(
+  //   "INSERT INTO users (email, password, market_name, city, district, role, verification_code, is_verified) VALUES (?, ?, ?, ?, ?, 'market', ?, false)",
+  //   [email, hashedPassword, marketName, city, district, verificationCode],
+  // );
 
   console.log("Market verification code:", verificationCode);
   await sendVerificationMail(email, verificationCode);
@@ -336,7 +345,7 @@ app.post("/login", async (req, res) => {
     [email],
   );
   if (rows.length === 0) {
-    return res.render("index", {
+    return res.render("main/index", {
       error: "Email or password is wrong.",
     });
   }
