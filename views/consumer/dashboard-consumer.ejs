@@ -14,14 +14,13 @@
     <div class="navbar">
       <a href="/" class="link-btn">Logout</a>
       <div class="search-bar">
-
         <form class="search-bar" action="/consumer/dashboard" method="GET">
           <input type="text" name="search" value="<%= search || '' %>" placeholder="Search product...">
-          <button type="submit" class="searchb">🔍</button>
+          <button type="submit" class="searchb">Search</button>
         </form>
       </div>
-      <div>
-        <a href="/profile" class="link-btn">Profil <span>isim</span></a>
+      <div class="right-menu">
+        <a href="/profile" class="link-btn"><span><%= userName %></span></a>
         <a href="/cart" class="link-btn">Sepetim</a>
       </div>
     </div>
@@ -40,17 +39,17 @@
                   <div><span>Stock: </span>
                     <%=p.stock%> Remaining
                   </div>
-                  <div><span>Price: </span>
-                    <%=p.normal_price%> tl
-                  </div>
-                  <div><span>Discounted Price: </span>
-                    <%=p.discounted_price%> tl
-                  </div>
                   <div><span>Expiration Date: </span>
                     <%=p.expiration_date.toLocaleDateString("tr-TR")%>
                   </div>
                   <div><span>Status: </span><%- p.remaining_days> 7 ? 'Safe' : p.remaining_days >= 0 ? 'About to expire!' : 'Expired'%></div>
-                  <button class="add-to-cart" data-id="<%= p.id %>">Add to Cart</button>
+                  <div class="price-cart">
+                    <div class="price-area">
+                      <div class="old-price"><%= p.normal_price %> TL</div>
+                      <div class="new-price"><%= p.discounted_price %> TL</div>
+                    </div>
+                    <button class="add-to-cart" data-id="<%= p.id %>">🛒</button>
+                  </div>
                 </div>
               </div>
               <% }) %>
