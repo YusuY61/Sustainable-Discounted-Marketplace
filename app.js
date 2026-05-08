@@ -95,8 +95,15 @@ app.get("/logout", (req, res) => {
   });
 });
 
-
+// login yaptıysa registere tekrar girmesin diye sessiona bağladım redirect atıyoruz
 app.get("/register-market", (req, res) => {
+  if (req.session.user) {
+    if (req.session.user.role === "market") {
+      return res.redirect("/market/dashboard");
+    }
+    return res.redirect("/consumer/dashboard");
+  }
+
   res.render("market/register-market", { error: null, old: {} });
 });
 
@@ -150,7 +157,15 @@ app.post("/register-market",
   });
 });
 
+// login yaptıysa registere tekrar girmesin diye sessiona bağladım redirect atıyoruz
 app.get("/register-consumer", (req, res) => {
+  if (req.session.user) {
+    if (req.session.user.role === "market") {
+      return res.redirect("/market/dashboard");
+    }
+    return res.redirect("/consumer/dashboard");
+  }
+
   res.render("consumer/register-consumer", { error: null, old: {} });
 });
 
@@ -326,7 +341,15 @@ app.post("/verify", (req, res) => {
   });
 });
 
+// verifye login yapmış kullanıcılar tekrar verify page url ile giremiyor onu kapadım redirect yapıyoruz
 app.get("/verify", (req, res) => {
+  if (req.session.user) {
+    if (req.session.user.role === "market") {
+      return res.redirect("/market/dashboard");
+    }
+    return res.redirect("/consumer/dashboard");
+  }
+
   res.render("verify", {
     email: "",
     code: "",
