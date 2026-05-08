@@ -12,12 +12,16 @@
   <div class="container">
     <div class="navbar">
       <a href="/logout" class="link-btn">Logout</a>
-      <a href="/profile" class="link-btn">Profil</a>
+      <a href="/profile" class="link-btn"><%= marketName %></a>
 
     </div>
     <div class="register">
       <div class="errors">
-
+        <% if (errors && errors.length > 0) { %>
+          <% errors.forEach(error => { %>
+            <p class="error">⚠️<%= error %></p>
+          <% }) %>
+        <% } %>
       </div>
 
       <form action="/market/dashboard" method="post" enctype="multipart/form-data" id="register-form">

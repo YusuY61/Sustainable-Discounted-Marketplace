@@ -11,6 +11,13 @@
 <body>
 
   <div class="container">
+    <% if (errors && errors.length > 0) { %>
+      <div>
+        <% errors.forEach(error => { %>
+        <p class="error">⚠️<%= error %></p>
+        <% }) %>
+      </div>
+    <% } %>
     <%
       const d = product.expiration_date;
       const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
