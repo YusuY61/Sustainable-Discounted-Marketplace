@@ -120,3 +120,16 @@ button:hover {
 .link a:hover {
     text-decoration: underline;
 }
+
+.error {
+    color: #b91c1c;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.error:empty {
+  display: none;
+}
