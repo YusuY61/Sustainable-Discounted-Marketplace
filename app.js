@@ -450,6 +450,13 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     `SELECT * FROM products WHERE market_id = ?`,
     [req.session.user.id],
   );
+  const [marketRows] = await db.query(
+    "SELECT market_name FROM users WHERE id = ?",
+    [req.session.user.id],
+  );
+
+  const marketName = marketRows[0].market_name;
+
 
   let message = null;
   if (req.query.deleted !== undefined) {
@@ -470,7 +477,7 @@ app.get("/market/dashboard", checkMarket, async (req, res) => {
     product.remaining_days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   });
 
-  res.render("market/dashboard-market", { arr, errors: [], message, oldForm: {} });
+  res.render("market/dashboard-market", { arr, errors: [], message, oldForm: {},marketName:marketName });
 });
 
 app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, res) => {
@@ -483,6 +490,12 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
   stock = parseInt(stock)
   normalPrice = parseFloat(normalPrice)
   discountedPrice = parseFloat(discountedPrice)
+  const [marketRows] = await db.query(
+    "SELECT market_name FROM users WHERE id = ?",
+    [req.session.user.id],
+  );
+
+  const marketName = marketRows[0].market_name;
 
   if (!name) {
     errors.push("Product must have a title.")
@@ -505,7 +518,17 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
 
   if (errors.length > 0) {
     const [arr] = await db.query(`SELECT * FROM products WHERE market_id = ?`, [req.session.user.id])
-    return res.render("market/dashboard-market", { arr, errors, oldForm: req.body })
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    arr.forEach(product => {
+      const expDate = new Date(product.expiration_date);
+      const diffMs = expDate - today;
+      product.remaining_days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    });
+
+    return res.render("market/dashboard-market", { arr, errors, oldForm: req.body, marketName })
   }
   try {
     await db.query(
@@ -537,21 +560,64 @@ app.get("/market/edit-product/:id", checkMarket, async (req, res) => {
   if (rows.length === 0) {
     return res.redirect("/market/dashboard");
   }
-  res.render("edit-product", { product: rows[0] });
+  res.render("edit-product", { product: rows[0], errors: [] });
 });
 
 app.post("/market/edit-product/:id", checkMarket, upload.single("image"), async (req, res) => {
   try {
+    let { name, stock, normalPrice, discountedPrice, expirationDate } = req.body;
+    const errors = [];
+
+    name = name.trim();
+    stock = parseInt(stock);
+    normalPrice = parseFloat(normalPrice);
+    discountedPrice = parseFloat(discountedPrice);
+
+    if (!name) {
+      errors.push("Product must have a title.");
+    }
+    if (!stock || stock <= 0) {
+      errors.push("Stock must be a positive integer.");
+    }
+    if (!normalPrice || normalPrice <= 0) {
+      errors.push("Normal price must be a positive integer.");
+    }
+    if (!discountedPrice || discountedPrice <= 0) {
+      errors.push("Discounted price must be a positive integer.");
+    }
+    if (normalPrice <= discountedPrice) {
+      errors.push("Discounted price must be less than normal price.");
+    }
+    if (!expirationDate) {
+      errors.push("Product must have an expiration date.");
+    }
+
+    if (errors.length > 0) {
+      const [rows] = await db.query(
+        "SELECT * FROM products WHERE id = ? AND market_id = ?",
+        [req.params.id, req.session.user.id],
+      );
+
+      const product = rows[0];
+
+      product.title = req.body.name;
+      product.stock = req.body.stock;
+      product.normal_price = req.body.normalPrice;
+      product.discounted_price = req.body.discountedPrice;
+      product.expiration_date = req.body.expirationDate ? new Date(req.body.expirationDate) : product.expiration_date;
+
+      return res.render("edit-product", { product, errors });
+    }
     if (req.file) {
       // yeni image yüklendi
       await db.query(
         `UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image_path = ? WHERE id = ? AND market_id = ?`,
         [
-          req.body.name.trim(),
-          req.body.stock,
-          req.body.normalPrice,
-          req.body.discountedPrice,
-          req.body.expirationDate,
+          name,
+          stock,
+          normalPrice,
+          discountedPrice,
+          expirationDate,
           req.file.filename,
           req.params.id,
           req.session.user.id,
@@ -562,11 +628,11 @@ app.post("/market/edit-product/:id", checkMarket, upload.single("image"), async 
       await db.query(
         `UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ? WHERE id = ? AND market_id = ?`,
         [
-          req.body.name.trim(),
-          req.body.stock,
-          req.body.normalPrice,
-          req.body.discountedPrice,
-          req.body.expirationDate,
+          name,
+          stock,
+          normalPrice,
+          discountedPrice,
+          expirationDate,
           req.params.id,
           req.session.user.id,
         ],
