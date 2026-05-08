@@ -12,7 +12,8 @@ document.querySelectorAll(".add-to-cart").forEach(btn => {
 
     const data = await res.json();
     if (data.success) {
-      btn.textContent = "Added!";
+      btn.textContent = "✓";
+      btn.disabled = true;
     } else {
       alert(data.message || "Something went wrong.");
     }

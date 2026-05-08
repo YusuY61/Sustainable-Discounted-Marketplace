@@ -27,6 +27,27 @@ body {
   border-bottom: 1px solid #d4d4d4;
 }
 
+.add-to-cart:disabled {
+  background: lightgreen;
+  cursor: not-allowed;
+  color:white
+}
+
+.no-image {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6, #d1d5db);
+  color: #6b7280;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 6px;
+}
+
 .link-btn {
   width: max-content;
   background: #222222;

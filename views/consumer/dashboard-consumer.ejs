@@ -30,7 +30,13 @@
           <%} else { %>
             <% products.forEach(p=> { %>
               <div class="product">
-                <div class="img"><img src="/uploads/<%= p.image_path%>" style="height: 200px;"></div>
+               <div class="img">
+                   <% if (p.image_path) { %>
+                      <img src="/uploads/<%= p.image_path %>" style="height: 200px;">
+                      <% } else { %>
+                      <div class="no-image"><%= p.title %></div>
+                    <% } %>
+                </div>
                 <div class="product-info">
                   <div><span>Name: </span>
                     <%=p.title%>

@@ -840,9 +840,9 @@ app.get("/cart/items", checkConsumer, async (req, res) => {
     const consumerId = req.session.user.id
 
   const [products] = await db.query(
-    `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price as price, products.image_path 
-    FROM cart_items 
-    JOIN products ON cart_items.product_id = products.id 
+    `SELECT cart_items.product_id, cart_items.quantity, products.title, products.discounted_price as price, products.image_path
+    FROM cart_items
+    JOIN products ON cart_items.product_id = products.id
     WHERE cart_items.consumer_id = ?`,
     [consumerId]
   );
