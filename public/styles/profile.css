@@ -75,14 +75,13 @@ form {
 }
 
 #back-btn {
-  background-color: #daf63b;
-  color: #2B2B2B;
+  background-color: #2B2B2B;
+  color: #ffffff;
   text-decoration: none;
 
+  padding: 10px;
   margin-top: 10px;
-  padding: 5px 10px;
-
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 #back-btn:hover {

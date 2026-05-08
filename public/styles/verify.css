@@ -18,6 +18,12 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0px;
+}
+
+#login_text {
+    font-weight: bold;
+    font-size: 24px;
 }
 
 .input_container {
@@ -28,13 +34,13 @@ h1 {
     margin-top: 10px;
 }
 
-#register_form {
+#verify_form {
     width: 60%;
     margin: 0px;
     padding: 22px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 input {
@@ -60,6 +66,7 @@ button {
     color: white;
     font-weight: bold;
     cursor: pointer;
+
     font-size: 15px;
 }
 
@@ -85,17 +92,31 @@ button:hover {
     text-align: center;
 }
 
-
-#back-btn {
-  background-color: #2B2B2B;
-  color: #ffffff;
-  text-decoration: none;
-
-  padding: 10px;
-
-  border-radius: 8px;
+.links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-#back-btn:hover {
-  color: #B3B3B3;
+.link {
+    width: 210px;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.link a {
+    display: block;
+    padding: 14px 10px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.link a:hover {
+    text-decoration: underline;
 }

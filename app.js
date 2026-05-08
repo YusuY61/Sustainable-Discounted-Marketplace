@@ -152,7 +152,6 @@ app.post("/register-market",
 
   res.render("verify", {
     email,
-    code: "",
     message: "Registration completed. Verification code was sent to your email.",
     error: null,
   });
@@ -327,7 +326,6 @@ app.post("/register-consumer", async (req, res) => {
 
   res.render("verify", {
     email,
-    code: "",
     message: "Registration completed. Verification code was sent to your email.",
     error: null,
   });
@@ -336,14 +334,16 @@ app.post("/register-consumer", async (req, res) => {
 app.post("/verify", async (req, res) => {
   const { email, code } = req.body;
   
+  console.log(code)
+  console.log(email)
+
   const [rows] = await db.query("SELECT * FROM users WHERE email = ? AND verification_code = ?", [email, code])
 
   if(rows.length === 0){
     return res.render("verify", {
     email,
-    code: "",
-    message: "Verification code is invalid",
-    error: null})
+    message: null,
+    error: "Verification code is invalid"})
   }
   await db.query("UPDATE users SET is_verified = true WHERE email = ?", [email])
 
@@ -367,7 +367,6 @@ app.get("/verify", (req, res) => {
 
   res.render("verify", {
     email: "",
-    code: "",
     message: null,
     error: null,
   });
@@ -414,9 +413,8 @@ app.post("/login", async (req, res) => {
     // });
     return res.render("verify", {
       email: user.email,
-      message: "Verify your email before logging in",
-      error: null,
-      code: ""
+      message: null,
+      error: "Verify your email before logging in",
     })
   }
 
@@ -606,90 +604,51 @@ app.post("/market/delete-expired", checkMarket, async (req, res) => {
   }
 });
 
-// incele
 app.get("/consumer/dashboard", checkConsumer, async (req, res) => {
-  let index = Number(req.query.page ?? 0)
   const search = req.query.search ?? "";
-  let products = []
+  const pageNumber = Number(req.query.pageNumber ?? 1);
+  const index = (pageNumber - 1) * 4;
 
-  //isim için ekledim
-  const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [
-    req.session.user.id,
-  ]);
+  const [consumer] = await db.query("SELECT * FROM users WHERE id = ?", [req.session.user.id]);
   const userName = consumer[0].full_name;
   const city = consumer[0].city;
   const district = consumer[0].district;
 
-  if (req.query.pageNumber) {
-    let pageNumber = Number(req.query.pageNumber)
-    index = (pageNumber - 1) * 4
-    const [arr] = await db.query(
-      `SELECT products.*, users.market_name, users.district,
-      DATEDIFF(products.expiration_date, CURDATE()) AS remaining_days
-      FROM products, users
-      WHERE products.market_id = users.id
-      AND products.title LIKE ?
-      AND users.city = ?
-      AND products.expiration_date >= CURDATE()
-      ORDER BY users.district = ? DESC
-      LIMIT ${index}, 4`,
-      [`%${search}%`, city, district],
-    );
-    const [[countRow]] = await db.query("select count(*) as total from products,users where products.market_id = users.id AND products.title LIKE ? AND users.city = ? AND products.expiration_date >= CURDATE()", [`%${search}%`, city])
-    const total = countRow.total
+  const [products] = await db.query(
+  `SELECT products.*, users.market_name, users.district,
+  DATEDIFF(products.expiration_date, CURDATE()) AS remaining_days
+  FROM products
+  JOIN users ON products.market_id = users.id
+  WHERE products.title LIKE ?
+  AND users.city = ?
+  AND products.expiration_date >= CURDATE()
+  ORDER BY users.district = ? DESC
+  LIMIT ?, 4`,
+  [`%${search}%`, city, district, index],
+);
 
-    let page_count = Math.ceil(total / 4)
+const [[countRow]] = await db.query(
+  `SELECT COUNT(*) as total 
+  FROM products
+  JOIN users ON products.market_id = users.id
+  WHERE products.title LIKE ? 
+  AND users.city = ? 
+  AND products.expiration_date >= CURDATE()`,
+  [`%${search}%`, city]
+);
 
-    products = arr;
+  const total = countRow.total;
+  const page_count = Math.ceil(total / 4);
 
-    res.render("consumer/dashboard-consumer", {
-      search: search,
-      products: products,
-      index,
-      maxSize: total,
-      page_count,
-      current_page: pageNumber,
-      userName: userName,
-    });
-  }
-  else if (search !== "") {
-    const [arr] = await db.query(
-      `SELECT products.*, users.market_name, users.district,
-      DATEDIFF(products.expiration_date, CURDATE()) AS remaining_days
-      FROM products, users
-      WHERE products.market_id = users.id
-      AND products.title LIKE ?
-      AND users.city = ?
-      AND products.expiration_date >= CURDATE()
-      ORDER BY users.district = ? DESC
-      LIMIT ${index}, 4`,
-      [`%${search}%`, city, district],
-    );
-    const [[countRow]] = await db.query("select count(*) as total from products,users where products.market_id = users.id AND products.title LIKE ? AND users.city = ? AND products.expiration_date >= CURDATE()", [`%${search}%`, city])
-    const total = countRow.total
-
-    let page_count = Math.ceil(total / 4)
-    let current_page = index / 4 + 1
-
-    products = arr;
-
-    res.render("consumer/dashboard-consumer", {
-      search: search,
-      products: products,
-      index,
-      maxSize: total,
-      page_count,
-      current_page,
-      userName: userName,
-    });
-  }
-  else {
-    res.render("consumer/dashboard-consumer", {
-      search: search,
-      products,
-      userName: userName,
-    });
-  }
+  res.render("consumer/dashboard-consumer", {
+    search,
+    products,
+    index,
+    maxSize: total,
+    page_count,
+    current_page: pageNumber,
+    userName,
+  });
 });
 
 app.post("/cart/add", checkConsumer, async (req, res) => {
