@@ -290,7 +290,7 @@ app.post("/register-consumer", async (req, res) => {
 
   // Validation
   if (!email || !fullName || !password || !city || !district) {
-    return res.render("register-consumer", {
+    return res.render("consumer/register-consumer", {
       error: "Please fill all fields.",
       old: req.body,
     });
@@ -301,7 +301,7 @@ app.post("/register-consumer", async (req, res) => {
     email,
   ]);
   if (existing.length > 0) {
-    return res.render("register-consumer", {
+    return res.render("consumer/register-consumer", {
       error: "This email is already registered.",
       old: req.body,
     });
@@ -375,7 +375,7 @@ app.post("/login", async (req, res) => {
     });
   }
   const [rows] = await db.query(
-    "SELECT id, email, password, role FROM users WHERE email = ?",
+    "SELECT id, email, password, role, is_verified FROM users WHERE email = ?",
     [email],
   );
   if (rows.length === 0) {
@@ -384,6 +384,13 @@ app.post("/login", async (req, res) => {
     });
   }
   const user = rows[0];
+
+  if (!user.is_verified) {
+    return res.render("main/index", {
+      error: "Please verify your email.",
+    });
+  }
+
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
@@ -468,7 +475,7 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
     errors.push("Normal price must be a positive integer.")
   }
   if (!discountedPrice || discountedPrice <= 0) {
-    errors.push("Normal price must be a positive integer.")
+    errors.push("Discounted price must be a positive integer.")
   }
   if (normalPrice <= discountedPrice) {
     errors.push("Discounted price must be less than normal price.")
@@ -760,7 +767,7 @@ app.post("/cart/purchase", checkConsumer, async (req, res) => {
   await db.query(
     "DELETE FROM products WHERE stock <= 0"
   )
-  
+
   await db.query(
     "DELETE FROM cart_items WHERE consumer_id = ?",
     [consumerId]
