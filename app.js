@@ -74,9 +74,27 @@ app.use(
   }),
 );
 
+// kullanıcı burdan girecek ve eğer hesabı giriliyse urlden buraya tekrar gelemeyecek
+// dashboardına re-direcet yaptırıyoruz
 app.get("/", async (req, res) => {
+    if (req.session.user) {
+    if (req.session.user.role === "market") {
+      return res.redirect("/market/dashboard");
+    }
+
+    if (req.session.user.role === "consumer") {
+      return res.redirect("/consumer/dashboard");
+    }
+  }
   res.render("main/index", { error: null });
 });
+// log-out direkt ana sayfaya atıyoruz ve sessionu da siliyorum
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
+
 
 app.get("/register-market", (req, res) => {
   res.render("market/register-market", { error: null, old: {} });
@@ -316,8 +334,17 @@ app.get("/verify", (req, res) => {
     error: null,
   });
 });
-
+// loginde eğer kullanıcı zaten login yaptıysa tekrar login sayfasına getirtmiyoruz
 app.post("/login", async (req, res) => {
+    if (req.session.user) {
+    if (req.session.user.role === "market") {
+      return res.redirect("/market/dashboard");
+    }
+
+    if (req.session.user.role === "consumer") {
+      return res.redirect("/consumer/dashboard");
+    }
+  }
   const { email, password } = req.body;
   if (!email || !password) {
     return res.render("main/index", {
