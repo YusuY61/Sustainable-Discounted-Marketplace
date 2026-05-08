@@ -58,10 +58,10 @@
           <input type="password" name="newPassword">
         </div>
   
-      <button type="submit" class="black-btn">Update Profile</button>
+      <button type="submit" class="purple-btn">Update Profile</button>
     </form>
   
-    <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" class="purple-btn">Back to dashboard</a>
+    <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" id="back-btn">Back to dashboard</a>
 </div>
 
 </body>
