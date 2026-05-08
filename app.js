@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
 import { body, validationResult } from 'express-validator';
+import { error } from "console";
 
 
 const app = express();
@@ -332,9 +333,20 @@ app.post("/register-consumer", async (req, res) => {
   });
 });
 
-app.post("/verify", (req, res) => {
+app.post("/verify", async (req, res) => {
   const { email, code } = req.body;
   
+  const [rows] = await db.query("SELECT * FROM users WHERE email = ? AND verification_code = ?", [email, code])
+
+  if(rows.length === 0){
+    return res.render("verify", {
+    email,
+    code: "",
+    message: "Verification code is invalid",
+    error: null})
+  }
+  await db.query("UPDATE users SET is_verified = true WHERE email = ?", [email])
+
   res.render("main/index", {
     success: "Email verified successfully. You can login now.",
     error: null
@@ -348,6 +360,9 @@ app.get("/verify", (req, res) => {
       return res.redirect("/market/dashboard");
     }
     return res.redirect("/consumer/dashboard");
+  }
+  else{
+    return res.redirect("/");
   }
 
   res.render("verify", {
@@ -385,18 +400,24 @@ app.post("/login", async (req, res) => {
   }
   const user = rows[0];
 
-  if (!user.is_verified) {
-    return res.render("main/index", {
-      error: "Please verify your email.",
-    });
-  }
-
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
     return res.render("main/index", {
       error: "Email or password is wrong.",
     });
+  }
+
+  if (!user.is_verified) {
+    // return res.render("main/index", {
+    //   error: "Please verify your email.",
+    // });
+    return res.render("verify", {
+      email: user.email,
+      message: "Verify your email before logging in",
+      error: null,
+      code: ""
+    })
   }
 
   req.session.user = {
