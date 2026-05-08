@@ -47,11 +47,11 @@ async function fetchItems() {
             </div>
             <div class="price"><span class="price">${item.quantity * item.price}</span> TL</div>
           </div>
+          </div>
         `
       });
 
       html += `
-        </div>
         </div>
           <div id="total">
             <span>Order Summary</span>

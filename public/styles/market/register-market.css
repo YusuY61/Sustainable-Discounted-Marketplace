@@ -88,7 +88,7 @@ button:hover {
 
 #back-btn {
   background-color: #daf63b;
-  color: black;
+  color: #2B2B2B;
   text-decoration: none;
 
   padding: 5px 10px;
@@ -97,5 +97,5 @@ button:hover {
 }
 
 #back-btn:hover {
-  text-decoration: underline;
+  color: #B3B3B3;
 }
