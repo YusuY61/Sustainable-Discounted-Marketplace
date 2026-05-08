@@ -4,114 +4,53 @@
 <head>
   <meta charset="UTF-8" />
   <title>Edit Product</title>
-  <link rel="stylesheet" href="/style.css" />
-  <style>
-    form {
-      max-width: 500px;
-      margin: 30px auto;
-    }
-
-    .gray-box {
-      background: #d9d9d9;
-      padding: 20px;
-      border-radius: 6px;
-    }
-
-    .gray-box label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .gray-box input {
-      background: white;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 14px;
-      margin-top: 4px;
-    }
-
-    .black-btn {
-      width: 100%;
-      background: black;
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 6px;
-      margin-top: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .black-btn:hover {
-      background: #333;
-    }
-
-    .gray-btn {
-      display: block;
-      max-width: 500px;
-      margin: 0 auto;
-      background: #d9d9d9;
-      color: black;
-      padding: 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .gray-btn:hover {
-      background: #c0c0c0;
-    }
+  <link rel="stylesheet" href="/styles/edit-product.css" />
   </style>
 </head>
 
 <body>
 
-  <h1>Edit Product</h1>
-
-  <%
-    const d = product.expiration_date;
-    const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  %>
-
-  <form action="/market/edit-product/<%= product.id %>" method="post" enctype="multipart/form-data">
-    <div class="gray-box">
-      <div>
-        <label>Name</label>
-        <input name="name" type="text" value="<%= product.title %>" required />
+  <div class="container">
+    <%
+      const d = product.expiration_date;
+      const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    %>
+    <form action="/market/edit-product/<%= product.id %>" method="post" enctype="multipart/form-data" id="edit_form">
+      <h1>Edit Product</h1>
+      <div class="gray-box">
+        <div class="input_container">
+          <label>Name</label>
+          <input name="name" type="text" value="<%= product.title %>" required />
+        </div>
+        <div class="input_container">
+          <label>Stock</label>
+          <input name="stock" type="text" value="<%= product.stock %>" required />
+        </div>
+        <div class="input_container">
+          <label>Normal Price</label>
+          <input name="normalPrice" type="text" value="<%= product.normal_price %>" required />
+        </div>
+        <div class="input_container">
+          <label>Discounted Price</label>
+          <input name="discountedPrice" type="text" value="<%= product.discounted_price %>" required />
+        </div>
+        <div class="input_container">
+          <label>Expiration Date</label>
+          <input name="expirationDate" type="date" value="<%= dateStr %>" required />
+        </div>
+        <div >
+          <label>Image:</label>
+          <% if (product.image_path) { %>
+            <div><img src="/uploads/<%= product.image_path %>" width="240" /></div>
+          <% } %>
+          <input name="image" type="file" accept="image/*" />
+          <div>Leave empty to keep current image.</div>
+        </div>
       </div>
-      <div>
-        <label>Stock</label>
-        <input name="stock" type="text" value="<%= product.stock %>" required />
-      </div>
-      <div>
-        <label>Normal Price</label>
-        <input name="normalPrice" type="text" value="<%= product.normal_price %>" required />
-      </div>
-      <div>
-        <label>Discounted Price</label>
-        <input name="discountedPrice" type="text" value="<%= product.discounted_price %>" required />
-      </div>
-      <div>
-        <label>Expiration Date</label>
-        <input name="expirationDate" type="date" value="<%= dateStr %>" required />
-      </div>
-      <div>
-        <label>Image</label>
-        <% if (product.image_path) { %>
-          <div><img src="/uploads/<%= product.image_path %>" width="120" /></div>
-        <% } %>
-        <input name="image" type="file" accept="image/*" />
-        <small>Leave empty to keep current image.</small>
-      </div>
-    </div>
-
-    <button type="submit" class="black-btn">Update</button>
-  </form>
-
-  <a href="/market/dashboard" class="gray-btn">Back</a>
+      <button type="submit" class="black-btn">Update</button>
+    </form>
+    <a href="/market/dashboard" id="back-btn">Back</a>
+  </div>
 
 </body>
 

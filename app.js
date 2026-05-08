@@ -455,8 +455,8 @@ app.post("/market/dashboard", checkMarket, upload.single("image"), async (req, r
   const errors = [];
   name = name.trim();
   stock = parseInt(stock)
-  normalPrice = parseInt(normalPrice)
-  discountedPrice = parseInt(discountedPrice)
+  normalPrice = parseFloat(normalPrice)
+  discountedPrice = parseFloat(discountedPrice)
 
   if (!name) {
     errors.push("Product must have a title.")
@@ -668,6 +668,26 @@ app.post("/cart/add", checkConsumer, async (req, res) => {
   const {productId} = req.body
   const consumerId = req.session.user.id
 
+  const [[product]] = await db.query(
+    "SELECT stock FROM products WHERE id = ?",
+    [productId]
+  )
+
+    if (!product) {
+    return res.json({ success: false, message: "Product not found." })
+  }
+
+  const [[cartItem]] = await db.query(
+    "SELECT quantity FROM cart_items WHERE consumer_id = ? AND product_id = ?",
+    [consumerId, productId]
+  )
+
+  const currentQty = cartItem ? cartItem.quantity : 0
+
+  if (currentQty >= product.stock) {
+    return res.json({ success: false, message: "Not enough stock." })
+  }
+
   const [existing] = await db.query(
     "SELECT id FROM cart_items WHERE consumer_id = ? AND product_id = ?",
     [consumerId, productId]
@@ -714,6 +734,37 @@ app.post("/cart/remove", checkConsumer, async (req, res) => {
       [consumerId, productId]
     );
   }
+
+  res.json({ success: true })
+})
+
+app.post("/cart/purchase", checkConsumer, async (req, res) => {
+  const consumerId = req.session.user.id
+
+  const [cartItems] = await db.query(
+    "SELECT product_id, quantity FROM cart_items WHERE consumer_id = ?",
+    [consumerId]
+  )
+
+  if (cartItems.length === 0) {
+    return res.json({ success: false, message: "Cart is empty." })
+  }
+
+  for (let item of cartItems) {
+    await db.query(
+      "UPDATE products SET stock = stock - ? WHERE id = ?",
+      [item.quantity, item.product_id]
+    )
+  }
+
+  await db.query(
+    "DELETE FROM products WHERE stock <= 0"
+  )
+  
+  await db.query(
+    "DELETE FROM cart_items WHERE consumer_id = ?",
+    [consumerId]
+  )
 
   res.json({ success: true })
 })

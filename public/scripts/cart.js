@@ -51,10 +51,15 @@ async function fetchItems() {
         `
       });
 
+      const total = data.reduce((sum, item) => sum + item.quantity * item.price, 0)
+
       html += `
         </div>
           <div id="total">
-            <span>Order Summary</span>
+            <div class="order_sum">Order Summary</div>
+            <hr class="line">
+            <div id="total-price">Total: <span>${total.toFixed(2)} TL</span></div>
+            <button id="buyBtn">BUY</button>
           </div>
         </div>
       `
@@ -66,38 +71,65 @@ async function fetchItems() {
   }
 
   document.querySelectorAll(".remove-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const productId = btn.dataset.id;
+    btn.addEventListener("click", async () => {
+      const productId = btn.dataset.id;
 
-    const res = await fetch("/cart/remove", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId })
+      const res = await fetch("/cart/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        await fetchItems();
+      }
     });
-
-    const data = await res.json();
-    if (data.success) {
-      await fetchItems();
-    }
   });
-});
 
-document.querySelectorAll(".increase-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const productId = btn.dataset.id;
+  document.querySelectorAll(".increase-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const productId = btn.dataset.id;
 
-    const res = await fetch("/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId })
+      const res = await fetch("/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        await fetchItems();
+      } else {
+        document.querySelector(".error")?.remove();
+
+        const errorEl = document.createElement("div")
+        errorEl.classList.add("error")
+        errorEl.textContent = data.message
+
+        containerEl.insertBefore(errorEl, containerEl.firstChild)
+      }
     });
-
-    const data = await res.json();
-    if (data.success) {
-      await fetchItems();
-    }
   });
-});
+
+  document.getElementById("buyBtn").addEventListener("click", async () => {
+    const res = await fetch("/cart/purchase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    })
+
+    const data = await res.json()
+    if (data.success) {
+      await fetchItems()
+    } else {
+      document.querySelector(".error")?.remove()
+
+      const errorEl = document.createElement("div")
+      errorEl.classList.add("error")
+      errorEl.textContent = data.message
+      containerEl.insertBefore(errorEl, containerEl.firstChild)
+    }
+  })
 }
 
 fetchItems();

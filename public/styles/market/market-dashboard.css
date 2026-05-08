@@ -28,7 +28,7 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 14px 60px;
+  padding: 7px 60px;
   background: white;
   border-bottom: 1px solid #d4d4d4;
 }
@@ -48,7 +48,6 @@ body {
   border: none;
   padding: 12px 16px;
   border-radius: 6px;
-  margin-top: 12px;
   cursor: pointer;
   text-decoration: none;
 }
@@ -58,9 +57,10 @@ body {
   flex-direction: column;
   margin: 0px;
   padding: 28px;
-  background: #f8fafc;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .property {
@@ -92,7 +92,8 @@ body {
   border-radius: 10px;
 
   padding: 40px 40px;
-  background: #f8fafc;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .product {
@@ -115,7 +116,23 @@ body {
   margin-bottom: 10px;
 }
 
+button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 10px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #6449FF;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 
+    font-size: 15px;
+}
+
+button:hover {
+    background-color: #542AD8;
+}
 
 .critical {
   border: 2px solid orange;
@@ -170,4 +187,6 @@ body {
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+
+  margin-bottom: 20px;
 }

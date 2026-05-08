@@ -103,6 +103,11 @@ h1 {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.order_sum {
+  margin: 5px 10px 0px 5px;
+  
+}
+
 .buttons{
   display: flex;
   flex-direction: row;
@@ -130,4 +135,13 @@ h1 {
 
 .price {
   font-weight: bold;
+}
+
+.error {
+    color: #b91c1c;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
 }
