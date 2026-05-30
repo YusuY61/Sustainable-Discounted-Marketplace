@@ -1,28 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Verification</title>
   <link rel="stylesheet" href="/styles/verify.css">
 </head>
+
 <body>
-
   <div class="container">
-    <% if (message) { %>
-        <p class="success"><%= message %></p>
-      <% } %>
 
-      <% if (error) { %>
-        <p class="error"><%= error %></p>
-      <% } %>
+    <div class="brand">
+      <div class="brand-rule"></div>
+      <h1>SUSTAINABLE<br>DISCOUNT MARKET</h1>
+      <div class="brand-rule"></div>
+      <div class="brand-tag">est. 2025</div>
+    </div>
+
+    <% if (message) { %>
+      <p class="success"><%= message %></p>
+    <% } %>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
     <form action="/verify" method="POST" id="verify_form">
       <h2>Email Verification</h2>
+      <p class="hint">We sent a 6-digit code to your email.</p>
+
       <input type="hidden" name="email" value="<%= email %>">
-      <label>Verification Code</label>
-      <input type="text" name="code" required>
+
+      <div class="input_container">
+        <label for="code">Verification Code</label>
+        <input type="text" name="code" id="code" required>
+      </div>
+
       <button type="submit">Verify</button>
     </form>
-  </div>
 
+  </div>
 </body>
+
 </html>

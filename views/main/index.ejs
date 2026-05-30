@@ -4,48 +4,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discount Marketplace</title>
+  <title>Sustainable Discount Market</title>
   <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body>
   <div class="container">
-    <h1>Welcome to the Sustainable Discount Marketplace</h1>
-    <h3>Please login or register to continue</h3>
+
+    <div class="brand">
+      <div class="brand-rule"></div>
+      <h1>SUSTAINABLE<br>DISCOUNT MARKET</h1>
+      <div class="brand-rule"></div>
+      <div class="brand-tag">est. 2025</div>
+    </div>
 
     <% if (error) { %>
-      <p class="error">
-        <%= error %>
-      </p>
-      <% } %>
+      <p class="error"><%= error %></p>
+    <% } %>
 
-      <% if (typeof success !== 'undefined' && success) { %>
-      <p class="success">
-        <%= success %>
-      </p>
-      <% } %>
+    <% if (typeof success !== 'undefined' && success) { %>
+      <p class="success"><%= success %></p>
+    <% } %>
 
-        <form action="/login" method="POST" id="login_form">
-          <span id="login_text">Login</span>
-          <div class="input_container">
-            <label for="email">Email:</label>
-            <input type="email" name="email" required>
-          </div>
-          <div class="input_container">
-            <label for="password">Password:</label>
-            <input type="password" name="password" required>
-          </div>
-          <button type="submit">Login</button>
-        </form>
+    <form action="/login" method="POST" id="login_form">
+      <h2>Login</h2>
 
-        <div class="links">
-          <div class="link">
-            <a href="/register-market">Register as Market</a>
-          </div>
-          <div class="link">
-            <a href="/register-consumer">Register as Consumer</a>
-          </div>
-        </div>
+      <div class="input_container">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+      </div>
+
+      <div class="input_container">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="links">
+      New here?
+      <a href="/register-market">Register as Market</a>
+      <span class="link-separator">·</span>
+      <a href="/register-consumer">Register as Consumer</a>
+    </div>
 
   </div>
 </body>

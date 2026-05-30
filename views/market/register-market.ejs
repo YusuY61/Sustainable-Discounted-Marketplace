@@ -9,45 +9,55 @@
 </head>
 
 <body>
-  <!DOCTYPE html>
-  <html lang="en">
+  <div class="container">
 
-  <head>
-    <div class="container">
-
-      <% if (error) { %>
-          <p class="error">
-            <%= error %>
-          </p>
-          <% } %>
-
-      <form action="/register-market" method="POST" id="register_form">
-        <h2>Market Register</h2>
-            <div class="input_container">
-              <label>Email</label>
-              <input type="email" name="email" value="<%= old.email ?? '' %>" required>
-            </div>
-            <div class="input_container">
-              <label>Market Name</label>
-              <input type="text" name="marketName" value="<%= old.marketName ?? '' %>" required>
-            </div>
-            <div class="input_container">
-              <label>Password</label>
-              <input type="password" name="password" required>
-            </div>
-            <div class="input_container">
-              <label>City</label>
-              <input type="text" name="city" value="<%= old.city ?? '' %>" required>
-            </div>
-            <div class="input_container">
-              <label>District</label>
-              <input type="text" name="district" value="<%= old.district ?? '' %>" required>
-            </div>
-            <button type="submit">Register</button>
-            <div class="input_container"><a href="/" id="back-btn">Back to login</a></div>
-      </form>
+    <div class="brand">
+      <div class="brand-rule"></div>
+      <h1>SUSTAINABLE<br>DISCOUNT MARKET</h1>
+      <div class="brand-rule"></div>
+      <div class="brand-tag">est. 2025</div>
     </div>
 
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <form action="/register-market" method="POST" id="register_form">
+      <h2>Market Register</h2>
+
+      <div class="input_container">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="<%= old.email ?? '' %>" required>
+      </div>
+
+      <div class="input_container">
+        <label for="marketName">Market Name</label>
+        <input type="text" name="marketName" id="marketName" value="<%= old.marketName ?? '' %>" required>
+      </div>
+
+      <div class="input_container">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+      </div>
+
+      <div class="input_container">
+        <label for="city">City</label>
+        <input type="text" name="city" id="city" value="<%= old.city ?? '' %>" required>
+      </div>
+
+      <div class="input_container">
+        <label for="district">District</label>
+        <input type="text" name="district" id="district" value="<%= old.district ?? '' %>" required>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/">← Back to login</a>
+    </div>
+
+  </div>
 </body>
 
 </html>

@@ -1,122 +1,157 @@
+/* Base */
 body {
     margin: 0;
     padding: 25px;
-    font-family: Arial;
-    background-color: #edeff3;
-    color: black;
-}
-
-h1 {
-    margin: 0px;
+    font-family: Arial, sans-serif;
+    background-color: #f5f1e8;
+    color: #1a1a1a;
 }
 
 .container {
     width: 90%;
-    max-width: 900px;
+    max-width: 480px;
     margin: 0 auto;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0px;
 }
 
-#login_text {
+/* Brand header (the "shop sign") */
+.brand {
+    text-align: center;
+    margin: 30px 0 25px;
+}
+
+.brand-rule {
+    width: 220px;
+    height: 1px;
+    background: #2d6a4f;
+    margin: 0 auto;
+}
+
+.brand h1 {
+    font-family: Georgia, serif;
+    font-size: 26px;
     font-weight: bold;
-    font-size: 24px;
+    margin: 10px 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+}
+
+.brand-tag {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #6b6b6b;
+    margin-top: 8px;
+}
+
+/* Login form */
+#login_form {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #d4cfc2;
+    border-radius: 3px;
+}
+
+#login_form h2 {
+    font-family: Georgia, serif;
+    margin: 0 0 16px;
+    font-size: 22px;
+    text-align: center;
 }
 
 .input_container {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
+    flex-direction: column;
+    margin-top: 12px;
 }
 
-#login_form {
-    width: 60%;
-    margin: 0px;
-    padding: 22px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.input_container label {
+    font-size: 14px;
+    margin-bottom: 5px;
 }
 
 input {
-    width: 60%;
-    height: 25px;
-    border: 1px solid #b8c0cc;
-    border-radius: 5px;
-    font-size: 16px;
+    height: 36px;
+    box-sizing: border-box;
+    border: 1px solid #d4cfc2;
+    border-radius: 3px;
+    padding: 0 10px;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    background: white;
 }
 
 input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #2d6a4f;
 }
 
 button {
     width: 100%;
     margin-top: 18px;
     padding: 10px;
-    border: 0;
-    border-radius: 8px;
-    background-color: #6449FF;
+    border: 1px solid #1f5538;
+    border-radius: 3px;
+    background-color: #2d6a4f;
     color: white;
     font-weight: bold;
-    cursor: pointer;
-
+    font-family: Georgia, serif;
     font-size: 15px;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: #542AD8;
+    background-color: #1f5538;
+}
+
+/* Error / success boxes */
+.error,
+.success {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 14px;
+    margin: 0 0 12px;
 }
 
 .error {
-    color: #b91c1c;
-    background-color: #fee2e2;
-    border: 1px solid #fecaca;
-    padding: 8px;
-    border-radius: 5px;
-    text-align: center;
+    color: #9b1c1c;
+    background-color: #f6e6e3;
+    border: 1px solid #d4a39e;
 }
 
 .success {
-    color: #166534;
-    background-color: #dcfce7;
-    border: 1px solid #bbf7d0;
-    padding: 8px;
-    border-radius: 5px;
-    text-align: center;
+    color: #1f5538;
+    background-color: #e6efe7;
+    border: 1px solid #a4c6ab;
 }
 
+/* Register links under the form */
 .links {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.link {
-    width: 210px;
-    padding: 0;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    margin-top: 16px;
     text-align: center;
+    font-family: Georgia, serif;
+    font-size: 14px;
 }
 
-.link a {
-    display: block;
-    padding: 14px 10px;
-    color: #2563eb;
+.links a {
+    color: #2d6a4f;
     text-decoration: none;
     font-weight: bold;
-    font-size: 15px;
+    margin: 0 6px;
 }
 
-.link a:hover {
+.links a:hover {
     text-decoration: underline;
+}
+
+.link-separator {
+    color: #d4cfc2;
 }
