@@ -1,5 +1,3 @@
-console.log("sa")
-
 document.querySelectorAll(".add-to-cart").forEach(btn => {
   btn.addEventListener("click", async () => {
     const productId = btn.dataset.id;
@@ -12,7 +10,7 @@ document.querySelectorAll(".add-to-cart").forEach(btn => {
 
     const data = await res.json();
     if (data.success) {
-      btn.textContent = "✓";
+      btn.textContent = "✓ Added";
       btn.disabled = true;
     } else {
       alert(data.message || "Something went wrong.");

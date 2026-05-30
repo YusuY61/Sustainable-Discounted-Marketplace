@@ -4,74 +4,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consumer Dashboard</title>
+  <title>Sustainable Discount Market</title>
   <link rel="stylesheet" href="/styles/consumer/consumer-dashboard.css">
 </head>
 
 <body>
-  <div class="container">
-    <div class="navbar">
-      <a href="/logout" class="link-btn">➜] Logout</a>
-      <div class="search-bar">
-        <form class="search-bar" action="/consumer/dashboard" method="GET">
-          <input type="text" name="search" value="<%= search || '' %>" placeholder="Search product...">
-          <button type="submit" class="searchb">Search</button>
-        </form>
-      </div>
-      <div class="right-menu">
-        <a href="/profile" class="link-btn">🌐 <%= userName %></a>
-        <a href="/cart" class="link-btn">🛒 My Cart</a>
-      </div>
-    </div>
-    <div class="content">
-      <div class="products">
-        <% if (products.length===0) { %>
-            <h1>There are no products in your city!</h1>
-          <%} else { %>
-            <% products.forEach(p=> { %>
-              <div class="product">
-               <div class="img">
-                   <% if (p.image_path) { %>
-                      <img src="/uploads/<%= p.image_path %>" style="height: 200px;">
-                      <% } else { %>
-                      <div class="no-image"><%= p.title %></div>
-                    <% } %>
-                </div>
-                <div class="product-info">
-                  <div><span>Name: </span>
-                    <%=p.title%>
-                  </div>
-                  <div><span>Stock: </span>
-                    <%=p.stock%> Remaining
-                  </div>
-                  <div><span>Expiration Date: </span>
-                    <%=p.expiration_date.toLocaleDateString("tr-TR")%>
-                  </div>
-                  <div><span>Status: </span><%- p.remaining_days> 7 ? 'Safe' : p.remaining_days >= 0 ? 'About to expire!' : 'Expired'%></div>
-                  <div class="price-cart">
-                    <div class="price-area">
-                      <div class="old-price"><%= p.normal_price %> TL</div>
-                      <div class="new-price"><%= p.discounted_price %> TL</div>
-                    </div>
-                    <button class="add-to-cart" data-id="<%= p.id %>">🛒</button>
-                  </div>
-                </div>
-              </div>
-              <% }) %>
-      </div>
 
-      <div class='pages'>
-        <% for (let i=1; i <=page_count; i++) {%>
-          <a class='pageNo <%= current_page === i ? "active" : ""%>' href='/consumer/dashboard?pageNumber=<%=i%>&search=<%= search %>'>
-            <%=i%>
-          </a>
-          <%}%>
-      </div>
+  <div class="navbar">
+    <a href="/consumer/dashboard" class="brand-nav">SUSTAINABLE DISCOUNT MARKET</a>
 
-      <%}%>
+    <form class="search-form" action="/consumer/dashboard" method="GET">
+      <input type="text" name="search" value="<%= search || '' %>" placeholder="Search products...">
+      <button type="submit">Search</button>
+    </form>
 
+    <div class="nav-links">
+      <a href="/profile" class="nav-link">Hi, <%= userName %></a>
+      <a href="/cart" class="nav-link">Cart</a>
+      <a href="/logout" class="nav-link">Logout</a>
     </div>
   </div>
+
+  <div class="content">
+
+    <% if (products.length === 0) { %>
+
+      <div class="empty-state">
+        <h2>No products found</h2>
+        <% if (search) { %>
+          <p>No matches for "<%= search %>" in your city.</p>
+          <p><a href="/consumer/dashboard">View all products</a></p>
+        <% } else { %>
+          <p>There are no discounted products in your city right now.</p>
+        <% } %>
+      </div>
+
+    <% } else { %>
+
+      <div class="products">
+        <% products.forEach(p => { %>
+          <%
+            let statusClass = 'safe';
+            let statusText = 'Safe';
+            if (p.remaining_days < 0) {
+              statusClass = 'expired';
+              statusText = 'Expired';
+            } else if (p.remaining_days <= 7) {
+              statusClass = 'warning';
+              if (p.remaining_days === 0) statusText = 'Last day!';
+              else if (p.remaining_days === 1) statusText = '1 day left';
+              else statusText = p.remaining_days + ' days left';
+            }
+          %>
+
+          <div class="product">
+
+            <div class="product-image">
+              <% if (p.image_path) { %>
+                <img src="/uploads/<%= p.image_path %>" alt="<%= p.title %>">
+              <% } else { %>
+                <div class="no-image">No image</div>
+              <% } %>
+            </div>
+
+            <h3 class="product-title"><%= p.title %></h3>
+            <div class="product-meta"><%= p.market_name %> · <%= p.district %></div>
+
+            <div class="product-status status-<%= statusClass %>"><%= statusText %></div>
+
+            <div class="product-stock">
+              <%= p.stock %> in stock · expires <%= p.expiration_date.toLocaleDateString("tr-TR") %>
+            </div>
+
+            <div class="product-prices">
+              <span class="old-price"><%= p.normal_price %> TL</span>
+              <span class="new-price"><%= p.discounted_price %> TL</span>
+            </div>
+
+            <button class="add-to-cart" data-id="<%= p.id %>">Add to Cart</button>
+
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="pages">
+        <% for (let i = 1; i <= page_count; i++) { %>
+          <a class="pageNo <%= current_page === i ? 'active' : '' %>"
+             href="/consumer/dashboard?pageNumber=<%= i %>&search=<%= search %>">
+            <%= i %>
+          </a>
+        <% } %>
+      </div>
+
+    <% } %>
+
+  </div>
+
   <script src="/scripts/consumer/dashboard-consumer.js"></script>
 </body>
 
