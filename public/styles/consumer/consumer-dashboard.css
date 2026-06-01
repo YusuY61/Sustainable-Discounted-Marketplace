@@ -288,3 +288,22 @@ body {
     color: white;
     border-color: #1f5538;
 }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .product { width: calc(50% - 9px); }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+    .brand-nav { font-size: 15px; }
+    .search-form { order: 3; max-width: 100%; }
+}
+
+@media (max-width: 520px) {
+    .product { width: 100%; }
+}

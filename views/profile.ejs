@@ -4,65 +4,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile</title>
+  <title>My Profile</title>
   <link rel="stylesheet" href="/styles/profile.css">
-
 </head>
 
 <body>
 
-<div class="container">
-  
-    <h2>My Profile</h2>
-  
+  <div class="navbar">
+    <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" class="brand-nav">SUSTAINABLE DISCOUNT MARKET</a>
+
+    <div class="nav-links">
+      <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" class="nav-link">← Back to dashboard</a>
+      <a href="/logout" class="nav-link">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <h1 class="page-title">My Profile</h1>
+
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
-  
+
     <% if (success) { %>
       <p class="success"><%= success %></p>
     <% } %>
-  
-    <form action="/profile-update" method="POST" id="update_form">
+
+    <form action="/profile-update" method="POST" id="profile-form">
+
+      <h2 class="section-header">Account Info</h2>
+
+      <div class="input_container">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="<%= user.email || '' %>" required>
+      </div>
+
+      <div class="input_container">
+        <label for="name"><%= user.role === 'market' ? 'Market Name' : 'Full Name' %></label>
+        <input type="text" name="name" id="name"
+          value="<%= (user.role === 'market' ? user.market_name : user.full_name) || '' %>" required>
+      </div>
+
+      <div class="form-row">
         <div class="input_container">
-          <label>Email: </label>
-          <input type="email" name="email" value="<%= user.email || '' %>" required>
+          <label for="city">City</label>
+          <input type="text" name="city" id="city" value="<%= user.city || '' %>" required>
         </div>
-  
+
         <div class="input_container">
-          <label><%= user.role === 'market' ? 'Market Name: ' : 'Full Name:' %></label>
-          <input type="text" name="name"
-            value="<%= (user.role === 'market' ? user.market_name : user.full_name) || '' %>" required>
+          <label for="district">District</label>
+          <input type="text" name="district" id="district" value="<%= user.district || '' %>" required>
         </div>
-  
-        <div class="input_container">
-          <label>City</label>
-          <input type="text" name="city" value="<%= user.city || '' %>" required>
-        </div>
-  
-        <div class="input_container">
-          <label>District</label>
-          <input type="text" name="district" value="<%= user.district || '' %>" required>
-        </div>
-  
-        <hr>
-        <small>Leave password fields empty if you don't want to change it.</small>
-  
-        <div class="input_container">
-          <label>Current Password</label>
-          <input type="password" name="currentPassword">
-        </div>
-  
-        <div class="input_container">
-          <label>New Password</label>
-          <input type="password" name="newPassword">
-        </div>
-  
-      <button type="submit" class="purple-btn">Update Profile</button>
+      </div>
+
+      <h2 class="section-header">Change Password</h2>
+      <p class="hint">Leave empty if you don't want to change your password.</p>
+
+      <div class="input_container">
+        <label for="currentPassword">Current Password</label>
+        <input type="password" name="currentPassword" id="currentPassword">
+      </div>
+
+      <div class="input_container">
+        <label for="newPassword">New Password</label>
+        <input type="password" name="newPassword" id="newPassword">
+      </div>
+
+      <button type="submit" class="btn-primary">Update Profile</button>
+
     </form>
-  
-    <a href="<%= user.role === 'market' ? '/market/dashboard' : '/consumer/dashboard' %>" id="back-btn">Back to dashboard</a>
-</div>
+
+  </div>
 
 </body>
 

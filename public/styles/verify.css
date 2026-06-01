@@ -139,3 +139,10 @@ button:hover {
     background-color: #e6efe7;
     border: 1px solid #a4c6ab;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+    body { padding: 15px; }
+    .brand h1 { font-size: 22px; }
+    .brand-rule { width: 180px; }
+}

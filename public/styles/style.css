@@ -155,3 +155,10 @@ button:hover {
 .link-separator {
     color: #d4cfc2;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+    body { padding: 15px; }
+    .brand h1 { font-size: 22px; }
+    .brand-rule { width: 180px; }
+}

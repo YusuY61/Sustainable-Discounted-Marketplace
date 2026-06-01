@@ -6,133 +6,137 @@ async function fetchItems() {
     const data = await res.json()
 
     if (data.length === 0) {
-      containerEl.innerHTML = ''
-      containerEl.innerHTML += `
-        <div id="emptyCart">
-          <img id="empty_icon" src="icon/empty_cart.png">
-          <h2>Your cart is empty!</h2>
-          <a href="/" id="back-btn">Back to dashboard</a>
-        </div>
-      `
+      renderEmpty()
     } else {
-      containerEl.innerHTML = ''
-
-      let html = ''
-
-      html += `
-        <div id="items">
-          <div id="cart">
-            <h4 id="cartTitle">My Cart (${data.length})</h4>
-            <hr class="line">
-          
-      `
-
-      data.forEach(item => {
-        html += `
-        <div class="item">
-              <div class="img"><img src="/uploads/${item.image_path}" style="height: 150px; width: 150px;"></div>
-              <hr>
-          <div class="product-info">
-            <div class="product-name">${item.title}</div>
-            <div class="buttons">
-        `
-        if (item.quantity === 1) {
-          html += `<div class="button remove-btn" data-id="${item.product_id}"><img src="/icon/trash.png"></div>`
-        } else {
-          html += `<div class="button remove-btn" data-id="${item.product_id}"><img src="/icon/minus-small.png"></div>`
-        }  
-
-        html += `
-              <div class="counter">${item.quantity}</div>
-              <div class="button increase-btn" data-id="${item.product_id}"><img src="/icon/plus-small.png"></div>
-            </div>
-            <div class="price"><span class="price">${item.quantity * item.price}</span> TL</div>
-          </div>
-          
-          </div>
-        `
-      });
-
-      const total = data.reduce((sum, item) => sum + item.quantity * item.price, 0)
-
-      html += `
-      <div id="back-div"><a href="/" id="back-btn">Back to dashboard</a></div>
-        </div>
-          <div id="total">
-            <div class="order_sum">Order Summary</div>
-            <hr class="line">
-            <div id="total-price">Total: <span>${total.toFixed(2)} TL</span></div>
-            <button id="buyBtn">BUY</button>
-          </div>
-        </div>
-      `
-
-      containerEl.innerHTML = html
+      renderCart(data)
     }
   } catch (error) {
     console.error("Error fetching items:", error)
   }
+}
 
+function renderEmpty() {
+  containerEl.innerHTML = `
+    <div class="empty-cart">
+      <img src="/icon/empty_cart.png" alt="Empty cart">
+      <h2>Your cart is empty</h2>
+      <p>Discover discounted products near you.</p>
+      <a href="/consumer/dashboard" class="btn-secondary">Back to dashboard</a>
+    </div>
+  `
+}
+
+function renderCart(items) {
+  const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0)
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
+  let itemsHtml = ''
+  items.forEach(item => {
+    // last unit → "×" (delete), more than one → "−" (decrease)
+    const removeIcon = item.quantity === 1 ? '×' : '−'
+    const lineTotal = (item.quantity * item.price).toFixed(2)
+
+    itemsHtml += `
+      <div class="cart-item">
+        <div class="cart-item-image">
+          <img src="/uploads/${item.image_path}" alt="${item.title}">
+        </div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.title}</div>
+          <div class="cart-item-controls">
+            <button class="qty-btn remove-btn" data-id="${item.product_id}">${removeIcon}</button>
+            <span class="qty-counter">${item.quantity}</span>
+            <button class="qty-btn increase-btn" data-id="${item.product_id}">+</button>
+          </div>
+        </div>
+        <div class="cart-item-price">${lineTotal} TL</div>
+      </div>
+    `
+  })
+
+  containerEl.innerHTML = `
+    <h1 class="page-title">My Cart (${itemCount})</h1>
+    <div class="cart-layout">
+      <div class="cart-items">${itemsHtml}</div>
+      <aside class="cart-summary">
+        <h2 class="summary-title">Order Summary</h2>
+        <div class="summary-row">
+          <span>Items</span>
+          <span>${itemCount}</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span>Total</span>
+          <span>${total.toFixed(2)} TL</span>
+        </div>
+        <button id="buyBtn">Buy Now</button>
+      </aside>
+    </div>
+  `
+
+  attachListeners()
+}
+
+function renderPurchaseSuccess() {
+  containerEl.innerHTML = `
+    <div class="empty-cart">
+      <h2>Thanks for your purchase!</h2>
+      <p>Your order has been placed.</p>
+      <a href="/consumer/dashboard" class="btn-secondary">Back to dashboard</a>
+    </div>
+  `
+}
+
+function showError(message) {
+  document.querySelector(".cart-error")?.remove()
+  const errorEl = document.createElement("div")
+  errorEl.className = "cart-error"
+  errorEl.textContent = message
+  containerEl.insertBefore(errorEl, containerEl.firstChild)
+}
+
+function attachListeners() {
   document.querySelectorAll(".remove-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
-      const productId = btn.dataset.id;
-
+      const productId = btn.dataset.id
       const res = await fetch("/cart/remove", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        await fetchItems();
-      }
-    });
-  });
+      })
+      const data = await res.json()
+      if (data.success) await fetchItems()
+    })
+  })
 
   document.querySelectorAll(".increase-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
-      const productId = btn.dataset.id;
-
+      const productId = btn.dataset.id
       const res = await fetch("/cart/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId })
-      });
-
-      const data = await res.json();
+      })
+      const data = await res.json()
       if (data.success) {
-        await fetchItems();
+        await fetchItems()
       } else {
-        document.querySelector(".error")?.remove();
-
-        const errorEl = document.createElement("div")
-        errorEl.classList.add("error")
-        errorEl.textContent = data.message
-
-        containerEl.insertBefore(errorEl, containerEl.firstChild)
+        showError(data.message)
       }
-    });
-  });
+    })
+  })
 
   document.getElementById("buyBtn").addEventListener("click", async () => {
     const res = await fetch("/cart/purchase", {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     })
-
     const data = await res.json()
     if (data.success) {
-      await fetchItems()
+      renderPurchaseSuccess()
     } else {
-      document.querySelector(".error")?.remove()
-
-      const errorEl = document.createElement("div")
-      errorEl.classList.add("error")
-      errorEl.textContent = data.message
-      containerEl.insertBefore(errorEl, containerEl.firstChild)
+      showError(data.message)
     }
   })
 }
 
-fetchItems();
+fetchItems()

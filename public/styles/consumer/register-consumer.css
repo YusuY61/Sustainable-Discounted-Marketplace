@@ -150,3 +150,10 @@ button:hover {
 .back-link a:hover {
     text-decoration: underline;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+    body { padding: 15px; }
+    .brand h1 { font-size: 22px; }
+    .brand-rule { width: 180px; }
+}

@@ -9,91 +9,145 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="navbar">
-      <a href="/logout" class="link-btn">Logout</a>
-      <a href="/profile" class="link-btn"><%= marketName %></a>
 
+  <div class="navbar">
+    <a href="/market/dashboard" class="brand-nav">SUSTAINABLE DISCOUNT MARKET</a>
+
+    <div class="nav-links">
+      <a href="/profile" class="nav-link">Hi, <%= marketName %></a>
+      <a href="/logout" class="nav-link">Logout</a>
     </div>
-    <div class="register">
-      <div class="errors">
+  </div>
+
+  <div class="dashboard-layout">
+
+    <!-- Left: Add Product form -->
+    <aside class="add-section">
+      <div class="add-card">
+        <h2 class="section-title">Add New Product</h2>
+
         <% if (errors && errors.length > 0) { %>
           <% errors.forEach(error => { %>
-            <p class="error">⚠️<%= error %></p>
+            <p class="error"><%= error %></p>
           <% }) %>
         <% } %>
-      </div>
 
-      <form action="/market/dashboard" method="post" enctype="multipart/form-data" id="register-form">
-        <div class="property">
-          <label for="product-name">Product Name:</label>
-          <input type="text" name="name" id="product-name" value="<%= oldForm.name || '' %>" placeholder="Product Name" required>
-        </div>
+        <form action="/market/dashboard" method="post" enctype="multipart/form-data" id="add-form">
 
-        <div class="property">
-          <label for="product-stock">Stock:</label>
-          <input type="number" name="stock" id="product-stock" value="<%= oldForm.stock || '' %>" placeholder="Stock" required>
-        </div>
-
-        <div class="property">
-          <label for="product-price">Price:</label>
-          <input type="number" name="normalPrice" id="product-price" step="0.01" value="<%= oldForm.normalPrice || '' %>" placeholder="Price" required>
-        </div>
-
-        <div class="property">
-          <label for="product-discounted-price">Discounted Price: </label>
-          <input type="number" name="discountedPrice" id="product-discounted-price" step="0.01" value="<%= oldForm.discountedPrice || '' %>" placeholder="Discounted Price"
-            required>
-        </div>
-
-        <div class="property">
-          <label for="product-expiration-date">Expiration Date:</label>
-          <input type="date" name="expirationDate" id="product-expiration-date" value="<%= oldForm.expirationDate || '' %>" required>
-        </div>
-
-        <div class="property">
-          <label for="product-image">Image: </label>
-          <input type="file" name="image" id="product-image" required>
-        </div>
-
-
-        <button type="submit">Add Product</button>
-      </form>
-    </div>
-    <div class="products">
-      <% arr.forEach(p=> { %>
-        <div class="product <%- p.remaining_days > 7 ? 'safe' : p.remaining_days  >= 0 ? 'critical' : 'expired'%>">
-          <div class="img"><img src="/uploads/<%= p.image_path%>" style="height: 200px;"></div>
-          <div class="product-info">
-            <div><span>Name: </span>
-              <%=p.title%>
-            </div>
-            <div><span>Stock: </span>
-              <%=p.stock%> Remaining
-            </div>
-            <div><span>Price: </span>
-              <%=p.normal_price%> tl
-            </div>
-            <div><span>Discounted Price: </span>
-              <%=p.discounted_price%> tl
-            </div>
-            <div><span>Expiration Date: </span>
-              <%=p.expiration_date.toLocaleDateString("tr-TR")%>
-            </div>
-            <div><span>Status: </span><%- p.remaining_days> 7 ? 'Safe' : p.remaining_days >= 0 ? 'About to expire!' :
-                'Expired'%></div>
-            <div class="operations">
-              <a href="/market/edit-product/<%=p.id%>" class="operation">Edit</a>
-              <a href="/market/delete-product/<%=p.id%>" class="operation">Delete</a>
-            </div>
+          <div class="input_container">
+            <label for="product-name">Product Name</label>
+            <input type="text" name="name" id="product-name" value="<%= oldForm.name || '' %>" required>
           </div>
+
+          <div class="input_container">
+            <label for="product-stock">Stock</label>
+            <input type="number" name="stock" id="product-stock" value="<%= oldForm.stock || '' %>" required>
+          </div>
+
+          <div class="input_container">
+            <label for="product-price">Price (TL)</label>
+            <input type="number" name="normalPrice" id="product-price" step="0.01" value="<%= oldForm.normalPrice || '' %>" required>
+          </div>
+
+          <div class="input_container">
+            <label for="product-discounted-price">Discounted Price (TL)</label>
+            <input type="number" name="discountedPrice" id="product-discounted-price" step="0.01" value="<%= oldForm.discountedPrice || '' %>" required>
+          </div>
+
+          <div class="input_container">
+            <label for="product-expiration-date">Expiration Date</label>
+            <input type="date" name="expirationDate" id="product-expiration-date" value="<%= oldForm.expirationDate || '' %>" required>
+          </div>
+
+          <div class="input_container">
+            <label for="product-image">Image</label>
+            <input type="file" name="image" id="product-image" required>
+          </div>
+
+          <button type="submit" class="btn-primary">Add Product</button>
+
+        </form>
+      </div>
+    </aside>
+
+    <!-- Right: Products list -->
+    <main class="products-section">
+
+      <% if (typeof message !== 'undefined' && message) { %>
+        <p class="success"><%= message %></p>
+      <% } %>
+
+      <% if (arr.length > 0) { %>
+
+        <h2 class="section-title">My Products (<%= arr.length %>)</h2>
+
+        <div class="products">
+          <% arr.forEach(p => { %>
+            <%
+              let statusClass = 'safe';
+              let statusText = 'Safe';
+              if (p.remaining_days < 0) {
+                statusClass = 'expired';
+                statusText = 'Expired';
+              } else if (p.remaining_days <= 7) {
+                statusClass = 'warning';
+                if (p.remaining_days === 0) statusText = 'Last day!';
+                else if (p.remaining_days === 1) statusText = '1 day left';
+                else statusText = p.remaining_days + ' days left';
+              }
+            %>
+
+            <div class="product <%= statusClass === 'expired' ? 'expired-card' : '' %>">
+
+              <div class="product-image">
+                <% if (p.image_path) { %>
+                  <img src="/uploads/<%= p.image_path %>" alt="<%= p.title %>">
+                <% } else { %>
+                  <div class="no-image">No image</div>
+                <% } %>
+              </div>
+
+              <h3 class="product-title"><%= p.title %></h3>
+
+              <div class="product-status status-<%= statusClass %>"><%= statusText %></div>
+
+              <div class="product-stock">
+                <%= p.stock %> in stock · expires <%= p.expiration_date.toLocaleDateString("tr-TR") %>
+              </div>
+
+              <div class="product-prices">
+                <span class="old-price"><%= p.normal_price %> TL</span>
+                <span class="new-price"><%= p.discounted_price %> TL</span>
+              </div>
+
+              <div class="product-actions">
+                <a href="/market/edit-product/<%= p.id %>" class="product-action action-edit">Edit</a>
+                <a href="/market/delete-product/<%= p.id %>" class="product-action action-delete">Delete</a>
+              </div>
+
+            </div>
+          <% }) %>
         </div>
-        <% }) %>
-    </div>
-    <form action="/market/delete-expired" method="post" onsubmit="return confirm('Are you sure you want to delete all expired products? This cannot be undone.');">
-        <button id="deleteAllBtn" type="submit" class="black-btn">Delete Expired Products</button>
-    </form>
+
+        <form action="/market/delete-expired" method="post"
+              onsubmit="return confirm('Are you sure you want to delete all expired products? This cannot be undone.');"
+              class="delete-expired-form">
+          <button type="submit" class="btn-danger-outline">Delete All Expired Products</button>
+        </form>
+
+      <% } else { %>
+
+        <div class="empty-state">
+          <h2>No products yet</h2>
+          <p>Use the form on the left to add your first product.</p>
+        </div>
+
+      <% } %>
+
+    </main>
+
   </div>
+
 </body>
 
 </html>
